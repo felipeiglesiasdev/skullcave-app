@@ -1,0 +1,53 @@
+/* ====================== ESTILOS BASE (HERDADOS DO LOGIN) ====================== */
+@import url('./login.css');
+
+/* ====================== ESPECÍFICOS PARA REGISTRO ====================== */
+.register-type-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.register-type-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.register-type-btn:hover {
+    border-color: #3498db;
+}
+
+.register-type-btn.active {
+    border-color: #2c3e50;
+    background-color: #f8f9fa;
+}
+
+.register-type-btn i {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+/* Esconde os formulários não ativos */
+.register-form {
+    display: none;
+}
+
+.register-form.active {
+    display: block;
+}
+
+/* Estilo para campos adicionais de escola */
+.escola-fields {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+}
