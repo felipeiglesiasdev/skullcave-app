@@ -1,22 +1,29 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
+// ====================== ROTAS PÚBLICAS ======================
 
+// ROTA INICIAL
 Route::get('/', function () {
     return view('welcome');
 });
 
+// ====================== ROTAS DE AUTENTICAÇÃO ======================
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/login', 'showLoginForm')->name('login');
+    Route::post('/login', 'login');
+    Route::post('/logout', 'logout')->name('logout');
+});
 
-// Rotas de Autenticação Manual
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::controller(RegisterController::class)->group(function () {
+    Route::get('/register', 'showRegistrationForm')->name('register');
+    Route::post('/register', 'register');
+});
 
-// Rotas Protegidas
+// ====================== ROTAS PROTEGIDAS ======================
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
