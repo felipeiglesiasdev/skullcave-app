@@ -69,10 +69,17 @@
                                 
                                 <div class="topicos-list" id="topicos-{{ $disciplina->id_disciplina }}">
                                     @forelse($disciplina->topicos ?? [] as $topico)
-                                        <div class="topico-item">
+                                        <div class="topico-item" data-id="{{ $topico->id_topico }}">
                                             <i class="fas fa-bookmark"></i>
                                             <span>{{ $topico->nome }}</span>
                                             <span class="count">{{ $topico->flashcards->count() ?? 0 }}</span>
+                                            <div class="topico-actions">
+                                                <button class="action-btn delete-btn" 
+                                                        onclick="removerTopico({{ $topico->id_topico }})"
+                                                        title="Remover tópico">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     @empty
                                         <div class="empty-state">Nenhum tópico</div>
@@ -256,6 +263,25 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset("js/dashboard_independente/script.js") }}"></script>
+    <script src="{{ asset("js/dashboard_independente/disciplinas.js") }}"></script>
+    <script src="{{ asset("js/dashboard_independente/topicos.js") }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Dashboard carregado!");
+            
+            // INICIALIZA O FORMULÁRIO DE DISCIPLINA
+            const disciplinaForm = document.getElementById("disciplinaForm");
+            if (disciplinaForm) {
+                disciplinaForm.addEventListener("submit", criarDisciplina);
+            }
+
+            // INICIALIZA O FORMULÁRIO DE TÓPICO
+            const topicoForm = document.getElementById("topicoForm");
+            if (topicoForm) {
+                topicoForm.addEventListener("submit", criarTopico);
+            }
+        });
+    </script>
 </body>
 </html>
