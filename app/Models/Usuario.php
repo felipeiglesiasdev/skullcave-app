@@ -59,6 +59,12 @@ class Usuario extends Authenticatable
         return $this->hasOne(Independente::class, 'id_usuario');
     }
 
+    // RELACIONA USUÁRIO COM SUAS DISCIPLINAS INDEPENDENTES (1:N)
+    public function disciplinasIndependentes()
+    {
+        return $this->hasMany(DisciplinaIndependente::class, 'id_usuario', 'id_usuario');
+    }
+    
     // ====================== MÉTODO DE AUTENTICAÇÃO ======================
     // SOBRESCREVE O MÉTODO PADRÃO DO LARAVEL PARA USAR 'senha' EM VEZ DE 'password'
     public function getAuthPassword()

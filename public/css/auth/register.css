@@ -7,7 +7,7 @@
 body {
     background: linear-gradient(135deg, var(--skull-dark) 0%, #2c2c2c 100%);
     min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .auth-container {
