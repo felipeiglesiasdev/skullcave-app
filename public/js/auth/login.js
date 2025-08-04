@@ -15,7 +15,7 @@ document.querySelector('.toggle-password').addEventListener('click', function() 
 });
 
 // ====================== VALIDAÇÃO DE FORMULÁRIO ======================
-document.querySelector('.login-form').addEventListener('submit', function(e) {
+document.querySelector('form').addEventListener('submit', function(e) {
     const userType = document.getElementById('user_type').value;
     if (!userType) {
         e.preventDefault();
