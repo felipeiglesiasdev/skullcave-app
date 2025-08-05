@@ -52,18 +52,16 @@ Route::middleware("auth")->group(function () {
     Route::prefix("dashboard/api/independente")->middleware(["auth"])->group(function () {
         
         // Disciplinas
-        Route::get("/disciplinas", [DashboardIndependenteController::class, "getDisciplinas"]);
-        Route::post("/disciplinas", [DashboardIndependenteController::class, "criarDisciplina"]);
-        Route::get("/disciplinas/{id}", [DashboardIndependenteController::class, "getDisciplina"]);
-        Route::put("/disciplinas/{id}", [DashboardIndependenteController::class, "editarDisciplina"]);
-        Route::delete("/disciplinas/{id}", [DashboardIndependenteController::class, "excluirDisciplina"]);
+        Route::get("/disciplinas", [DashboardIndependenteController::class, "getDisciplinas"]); //FUNCIONANDO
+        Route::post("/disciplinas", [DashboardIndependenteController::class, "criarDisciplina"]); //FUNCIONANDO
+        Route::get("/disciplinas/{id}", [DashboardIndependenteController::class, "getDisciplina"]); //FUNCIONANDO
+        Route::delete("/disciplinas/{id}", [DashboardIndependenteController::class, "excluirDisciplina"]); // FUNCIONANDO
         
         // Tópicos
-        Route::get("/disciplinas/{disciplinaId}/topicos", [DashboardIndependenteController::class, "getTopicos"]);
-        Route::post("/topicos", [DashboardIndependenteController::class, "criarTopico"]);
-        Route::get("/topicos/{id}", [DashboardIndependenteController::class, "getTopico"]);
-        Route::put("/topicos/{id}", [DashboardIndependenteController::class, "editarTopico"]);
-        Route::delete("/topicos/{id}", [DashboardIndependenteController::class, "excluirTopico"]);
+        Route::get("/disciplinas/{disciplinaId}/topicos", [DashboardIndependenteController::class, "getTopicos"]); // FUNCIONANDO
+        Route::post("/topicos", [DashboardIndependenteController::class, "criarTopico"]); // FUNCIONANDO
+        Route::get("/topicos/{id}", [DashboardIndependenteController::class, "getTopico"]); // FUNCIONANDO
+        Route::delete("/topicos/{id}", [DashboardIndependenteController::class, "excluirTopico"]); // FUNCIONANDO
         
         // Flashcards
         Route::get("/topicos/{topicoId}/flashcards", [DashboardIndependenteController::class, "getFlashcards"]);

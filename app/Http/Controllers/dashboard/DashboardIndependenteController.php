@@ -196,7 +196,7 @@ class DashboardIndependenteController extends Controller
         $disciplinasRecentes = Disciplina::where("id_usuario", $user->id_usuario)
             ->with(["topicos"])
             ->orderBy("created_at", "desc")
-            ->limit(5)
+            ->limit(80)
             ->get();
 
         // CALCULA A ATIVIDADE RECENTE (FLASHCARDS CRIADOS NOS ÚLTIMOS 7 DIAS)
@@ -591,85 +591,6 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    // ===================================================================================
-    // MÉTODO PARA EDITAR UMA DISCIPLINA EXISTENTE
-    public function editarDisciplina(Request $request, $id)
-    {
-        // VALIDA OS DADOS DA REQUISIÇÃO
-        $request->validate([
-            "nome" => "required|string|max:255", // NOME É OBRIGATÓRIO E STRING
-            "descricao" => "nullable|string|max:1000" // DESCRIÇÃO É OPCIONAL E STRING
-        ]);
 
-        // OBTÉM O USUÁRIO AUTENTICADO
-        $user = Auth::user();
-
-        // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO
-        $disciplina = Disciplina::where("id_disciplina", $id)
-            ->where("id_usuario", $user->id_usuario)
-            ->first();
-
-        // SE A DISCIPLINA NÃO FOR ENCONTRADA OU NÃO PERTENCER AO USUÁRIO
-        if (!$disciplina) {
-            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
-            return response()->json([
-                "success" => false,
-                "message" => "Disciplina não encontrada ou sem permissão para editar."
-            ], 404);
-        }
-
-        // ATUALIZA O NOME E A DESCRIÇÃO DA DISCIPLINA
-        $disciplina->nome = $request->nome;
-        $disciplina->descricao = $request->descricao;
-        $disciplina->save(); // SALVA AS ALTERAÇÕES NA DISCIPLINA
-
-        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A DISCIPLINA ATUALIZADA
-        return response()->json([
-            "success" => true,
-            "message" => "Disciplina atualizada com sucesso!",
-            "disciplina" => $disciplina
-        ]);
-    }
-
-    // ===================================================================================
-    // MÉTODO PARA EDITAR UM TÓPICO EXISTENTE
-    public function editarTopico(Request $request, $id)
-    {
-        // VALIDA OS DADOS DA REQUISIÇÃO
-        $request->validate([
-            "nome" => "required|string|max:255", // NOME É OBRIGATÓRIO E STRING
-            "descricao" => "nullable|string|max:1000" // DESCRIÇÃO É OPCIONAL E STRING
-        ]);
-
-        // OBTÉM O USUÁRIO AUTENTICADO
-        $user = Auth::user();
-
-        // BUSCA O TÓPICO PELO ID E VERIFICA SE PERTENCE A UMA DISCIPLINA DO USUÁRIO
-        $topico = Topico::where("id_topico", $id)
-            ->whereHas("disciplina", function ($query) use ($user) {
-                $query->where("id_usuario", $user->id_usuario);
-            })
-            ->first();
-
-        // SE O TÓPICO NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
-        if (!$topico) {
-            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
-            return response()->json([
-                "success" => false,
-                "message" => "Tópico não encontrado ou sem permissão para editar."
-            ], 404);
-        }
-
-        // ATUALIZA O NOME E A DESCRIÇÃO DO TÓPICO
-        $topico->nome = $request->nome;
-        $topico->descricao = $request->descricao;
-        $topico->save(); // SALVA AS ALTERAÇÕES NO TÓPICO
-
-        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E O TÓPICO ATUALIZADO
-        return response()->json([
-            "success" => true,
-            "message" => "Tópico atualizado com sucesso!",
-            "topico" => $topico
-        ]);
-    }
+    
 }

@@ -53,9 +53,6 @@
                                 <span class="topicos-count">{{ count($disciplina->topicos ?? []) }} tópicos</span>
                             </div>
                             <div class="disciplina-actions">
-                                <button class="btn-action" onclick="event.stopPropagation(); editarDisciplina({{ $disciplina->id_disciplina }})" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
                                 <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerDisciplina({{ $disciplina->id_disciplina }})" title="Excluir">
                                     <i class="fas fa-trash"></i>
                                 </button>
