@@ -18,25 +18,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- CSS -->
-     <link href="{{ asset('css/toast.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/toast.css') }}" rel="stylesheet">
     <link href="{{ asset('css/independente.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Esquerda - Disciplinas -->
-        <div class="sidebar-left">
+        <div class="sidebar-disciplinas">
             <div class="sidebar-header">
                 <div class="logo">
-                    <img src="{{ asset('images/logo-skullcave2.png') }}" alt="Logo SkullCave" class="img-fluid">
+                    <img src="{{ asset('images/logo-skullcave3.png') }}" alt="Logo SkullCave">
                 </div>
-                <h5 class="user-type">Independente</h5>
+                
             </div>
 
             <div class="disciplinas-section">
                 <div class="section-header">
                     <h6>Minhas Disciplinas</h6>
-                    <button class="btn-add" onclick="openModal('disciplinaModal')">
+                    <button class="btn-add" onclick="abrirModalDisciplina()" title="Adicionar Disciplina">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
@@ -54,10 +53,10 @@
                                 <span class="topicos-count">{{ count($disciplina->topicos ?? []) }} tópicos</span>
                             </div>
                             <div class="disciplina-actions">
-                                <button class="btn-action" onclick="editarDisciplina({{ $disciplina->id_disciplina }})" title="Editar">
+                                <button class="btn-action" onclick="event.stopPropagation(); editarDisciplina({{ $disciplina->id_disciplina }})" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn-action btn-delete" onclick="removerDisciplina({{ $disciplina->id_disciplina }})" title="Excluir">
+                                <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerDisciplina({{ $disciplina->id_disciplina }})" title="Excluir">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -66,11 +65,53 @@
                         <div class="empty-state">
                             <i class="fas fa-book-open"></i>
                             <p>Nenhuma disciplina criada</p>
-                            <button class="btn btn-primary btn-sm" onclick="openModal('disciplinaModal')">
-                                Criar primeira disciplina
-                            </button>
                         </div>
                     @endforelse
+                </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-section">
+                <div class="stats-header">
+                    <h6>Estatísticas</h6>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalDisciplinas">{{ $totalDisciplinas ?? 0 }}</span>
+                            <span class="stat-label">Disciplinas</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalTopicos">{{ $totalTopicos ?? 0 }}</span>
+                            <span class="stat-label">Tópicos</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalFlashcards">{{ $totalFlashcards ?? 0 }}</span>
+                            <span class="stat-label">Flashcards</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalPerguntas">{{ $totalPerguntas ?? 0 }}</span>
+                            <span class="stat-label">Perguntas</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -95,38 +136,109 @@
             </div>
         </div>
 
-        <!-- Área Central - Tópicos -->
-        <div class="content-center">
-            <div class="topicos-header">
-                <h5 id="disciplina-nome">Selecione uma disciplina</h5>
-                <button class="btn-add" id="btn-add-topico" onclick="openModal('topicoModal')" style="display: none;">
-                    <i class="fas fa-plus"></i>
-                    Novo Tópico
-                </button>
-            </div>
-
-            <div id="topicosList" class="topicos-list">
-                <div class="empty-state">
-                    <i class="fas fa-bookmark"></i>
-                    <p>Selecione uma disciplina para ver os tópicos</p>
+        <!-- Área Principal - Conteúdo Dinâmico -->
+        <div class="main-content">
+            <div class="content-header">
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item" id="disciplina-nome">Selecione uma disciplina</span>
+                    <span class="breadcrumb-separator" id="breadcrumb-separator" style="display: none;"> / </span>
+                    <span class="breadcrumb-item" id="topico-nome" style="display: none;">Tópico</span>
+                </div>
+                <div class="content-actions">
+                    <button class="btn-add-content" id="btn-add-topico" onclick="abrirModalTopico()" style="display: none;">
+                        <i class="fas fa-plus"></i>
+                        Novo Tópico
+                    </button>
+                    <button class="btn-add-content" id="btn-add-flashcard" onclick="abrirModalFlashcard()" style="display: none;">
+                        <i class="fas fa-plus"></i>
+                        Novo Flashcard
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Área Direita - Flashcards -->
-        <div class="content-right">
-            <div class="flashcards-header">
-                <h5 id="topico-nome">Selecione um tópico</h5>
-                <button class="btn-add" id="btn-add-flashcard" onclick="openModal('flashcardModal')" style="display: none;">
-                    <i class="fas fa-plus"></i>
-                    Novo Flashcard
-                </button>
-            </div>
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Estado Inicial -->
+                <div id="welcome-state" class="welcome-state" style="display: none;">
+                    <div class="welcome-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2>Bem-vindo ao seu Dashboard de Flashcards!</h2>
+                    <p>Organize seus estudos criando disciplinas, tópicos e flashcards personalizados.</p>
+                    <button class="btn-primary" onclick="abrirModalDisciplina()">
+                        <i class="fas fa-plus"></i>
+                        Criar primeira disciplina
+                    </button>
+                </div>
 
-            <div id="flashcardsList" class="flashcards-list">
-                <div class="empty-state">
-                    <i class="fas fa-layer-group"></i>
-                    <p>Selecione um tópico para ver os flashcards</p>
+                <!-- Lista de Tópicos -->
+                <div id="topicos-view" class="content-view" style="display: none;">
+                    <div class="view-header">
+                        <h3>Tópicos</h3>
+                        <p>Selecione um tópico para ver seus flashcards</p>
+                    </div>
+                    <div id="topicosList" class="items-grid">
+                        @forelse($disciplina->topicos ?? [] as $topico)
+                            <div class="topico-card" 
+                                 data-id="{{ $topico->id_topico }}"
+                                 onclick="selecionarTopico({{ $topico->id_topico }})">
+                                <div class="topico-icon">
+                                    <i class="fas fa-bookmark"></i>
+                                </div>
+                                <div class="topico-info">
+                                    <h6>{{ $topico->nome }}</h6>
+                                    <span class="flashcards-count">{{ count($topico->flashcards ?? []) }} tópicos</span>
+                                </div>
+                                <div class="topico-actions">
+                                    <button class="btn-action" onclick="event.stopPropagation(); removerTopico({{ $topico->id_topico }})" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state">
+                                <i class="fas fa-bookmark"></i>
+                                <p>Nenhum tópico criado para esta disciplina</p>
+                                <button class="btn btn-primary btn-sm" onclick="abrirModalTopico()">
+                                    Criar primeiro tópico
+                                </button>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Lista de Flashcards -->
+                <div id="flashcards-view" class="content-view" style="display: none;">
+                    <div class="view-header">
+                        <h3>Flashcards</h3>
+                        <p>Seus flashcards para estudo</p>
+                    </div>
+                    <div id="flashcardsList" class="items-grid">
+                        @forelse($topico->flashcards ?? [] as $flashcard)
+                            <div class="flashcard-card" data-id="{{ $flashcard->id_flashcard }}">
+                                <div class="flashcard-header">
+                                    <h6 class="flashcard-title">{{ $flashcard->titulo }}</h6>
+                                    <div class="flashcard-actions">
+                                        <span class="perguntas-count">{{ count($flashcard->perguntas ?? []) }}</span>
+                                        <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerFlashcard({{ $flashcard->id_flashcard }})" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                @if($flashcard->descricao)
+                                    <p class="flashcard-description">{{ $flashcard->descricao }}</p>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="empty-state">
+                                <i class="fas fa-layer-group"></i>
+                                <p>Nenhum flashcard criado para este tópico</p>
+                                <button class="btn btn-primary btn-sm" onclick="abrirModalFlashcard()">
+                                    Criar primeiro flashcard
+                                </button>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
@@ -221,10 +333,12 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS e dependências -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
-    <!-- JavaScript -->
+    <!-- JS -->
+    <script src="{{ asset('js/toast.js') }}"></script>
     <script src="{{ asset('js/independente.js') }}"></script>
 </body>
 </html>

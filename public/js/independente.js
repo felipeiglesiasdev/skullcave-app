@@ -1,4 +1,4 @@
-// JavaScript específico para Dashboard Independente
+// JavaScript específico para Dashboard Independente - Layout 2 Colunas
 
 let disciplinaSelecionada = null;
 let topicoSelecionado = null;
@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Carregar disciplinas ao iniciar
     carregarDisciplinas();
     
+    // Carregar estatísticas ao iniciar
+    carregarEstatisticas();
+    
     // Se há disciplinas, selecionar a primeira após carregamento
     setTimeout(() => {
         const primeiraDisciplina = document.querySelector('.disciplina-card.active');
@@ -18,6 +21,61 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1000);
 });
+
+// ===== FUNÇÕES DE CONTROLE DE VIEWS =====
+
+function mostrarView(viewId) {
+    // Esconder todas as views
+    document.querySelectorAll('.content-view, .welcome-state').forEach(view => {
+        view.style.display = 'none';
+    });
+    
+    // Mostrar a view solicitada
+    const targetView = document.getElementById(viewId);
+    if (targetView) {
+        targetView.style.display = 'block';
+    }
+}
+
+function atualizarBreadcrumb(disciplinaNome, topicoNome = null) {
+    const disciplinaElement = document.getElementById('disciplina-nome');
+    const topicoElement = document.getElementById('topico-nome');
+    const separatorElement = document.getElementById('breadcrumb-separator');
+    
+    if (disciplinaElement) {
+        disciplinaElement.textContent = disciplinaNome;
+    }
+    
+    if (topicoNome) {
+        if (topicoElement) {
+            topicoElement.textContent = topicoNome;
+            topicoElement.style.display = 'inline';
+        }
+        if (separatorElement) {
+            separatorElement.style.display = 'inline';
+        }
+    } else {
+        if (topicoElement) {
+            topicoElement.style.display = 'none';
+        }
+        if (separatorElement) {
+            separatorElement.style.display = 'none';
+        }
+    }
+}
+
+function atualizarBotoesAcao(mostrarTopico = false, mostrarFlashcard = false) {
+    const btnAddTopico = document.getElementById('btn-add-topico');
+    const btnAddFlashcard = document.getElementById('btn-add-flashcard');
+    
+    if (btnAddTopico) {
+        btnAddTopico.style.display = mostrarTopico ? 'flex' : 'none';
+    }
+    
+    if (btnAddFlashcard) {
+        btnAddFlashcard.style.display = mostrarFlashcard ? 'flex' : 'none';
+    }
+}
 
 // ===== FUNÇÕES DE DISCIPLINAS =====
 
@@ -34,25 +92,19 @@ function selecionarDisciplina(disciplinaId) {
     if (disciplinaCard) {
         disciplinaCard.classList.add('active');
         
-        // Atualizar nome da disciplina no header
+        // Atualizar breadcrumb
         const nomeDisciplina = disciplinaCard.querySelector('h6').textContent;
-        const disciplinaNomeElement = document.getElementById('disciplina-nome');
-        if (disciplinaNomeElement) {
-            disciplinaNomeElement.textContent = nomeDisciplina;
-        }
+        atualizarBreadcrumb(nomeDisciplina);
         
         // Mostrar botão de adicionar tópico
-        const btnAddTopico = document.getElementById('btn-add-topico');
-        if (btnAddTopico) {
-            btnAddTopico.style.display = 'flex';
-        }
+        atualizarBotoesAcao(true, false);
     }
+    
+    // Mostrar view de tópicos
+    mostrarView('topicos-view');
     
     // Carregar tópicos da disciplina
     carregarTopicos(disciplinaId);
-    
-    // Limpar área de flashcards
-    limparFlashcards();
 }
 
 function carregarDisciplinas() {
@@ -100,9 +152,15 @@ function renderizarDisciplinas(disciplinas) {
                 </button>
             </div>
         `;
+        
+        // Mostrar welcome state se não houver disciplinas
+        mostrarView("welcome-state");
+        atualizarBotoesAcao(false, false);
         return;
     }
     
+    // Se há disciplinas, esconder o welcome state e renderizar normalmente
+    mostrarView("topicos-view"); // Ou a view padrão após carregar disciplinas
     container.innerHTML = disciplinas.map((disciplina, index) => `
         <div class="disciplina-card ${index === 0 ? 'active' : ''}" 
              data-id="${disciplina.id_disciplina}"
@@ -124,6 +182,11 @@ function renderizarDisciplinas(disciplinas) {
             </div>
         </div>
     `).join('');
+    
+    // Selecionar a primeira disciplina automaticamente se houver
+    if (disciplinas.length > 0) {
+        selecionarDisciplina(disciplinas[0].id_disciplina);
+    }
 }
 
 function abrirModalDisciplina() {
@@ -252,7 +315,7 @@ function renderizarTopicos(topicos) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-bookmark"></i>
-                <p>Nenhum tópico criado</p>
+                <p>Nenhum tópico criado para esta disciplina</p>
                 <button class="btn btn-primary btn-sm" onclick="abrirModalTopico()">
                     Criar primeiro tópico
                 </button>
@@ -261,8 +324,8 @@ function renderizarTopicos(topicos) {
         return;
     }
     
-    container.innerHTML = topicos.map((topico, index) => `
-        <div class="topico-card ${index === 0 ? 'active' : ''}" 
+    container.innerHTML = topicos.map(topico => `
+        <div class="topico-card" 
              data-id="${topico.id_topico}"
              onclick="selecionarTopico(${topico.id_topico})">
             <div class="topico-icon">
@@ -272,13 +335,13 @@ function renderizarTopicos(topicos) {
                 <h6>${topico.nome}</h6>
                 <span class="flashcards-count">${topico.flashcards ? topico.flashcards.length : 0} flashcards</span>
             </div>
+            <div class="topico-actions">
+                <button class="btn-action" onclick="event.stopPropagation(); removerTopico(${topico.id_topico})" title="Excluir">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </div>
     `).join('');
-    
-    // Se há tópicos, selecionar o primeiro
-    if (topicos.length > 0) {
-        selecionarTopico(topicos[0].id_topico);
-    }
 }
 
 function selecionarTopico(topicoId) {
@@ -293,19 +356,17 @@ function selecionarTopico(topicoId) {
     if (topicoCard) {
         topicoCard.classList.add('active');
         
-        // Atualizar nome do tópico no header
+        // Atualizar breadcrumb
         const nomeTopico = topicoCard.querySelector('h6').textContent;
-        const topicoNomeElement = document.getElementById('topico-nome');
-        if (topicoNomeElement) {
-            topicoNomeElement.textContent = nomeTopico;
-        }
+        const disciplinaNome = document.getElementById('disciplina-nome').textContent;
+        atualizarBreadcrumb(disciplinaNome, nomeTopico);
         
         // Mostrar botão de adicionar flashcard
-        const btnAddFlashcard = document.getElementById('btn-add-flashcard');
-        if (btnAddFlashcard) {
-            btnAddFlashcard.style.display = 'flex';
-        }
+        atualizarBotoesAcao(true, true);
     }
+    
+    // Mostrar view de flashcards
+    mostrarView('flashcards-view');
     
     // Carregar flashcards do tópico
     carregarFlashcards(topicoId);
@@ -415,7 +476,9 @@ function carregarFlashcards(topicoId) {
         console.error('ID do tópico não fornecido');
         return;
     }
-        fetch(`./api/independente/topicos/${topicoId}/flashcards`, {  method: 'GET',
+    
+    fetch(`./api/independente/topicos/${topicoId}/flashcards`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
@@ -452,7 +515,7 @@ function renderizarFlashcards(flashcards) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-layer-group"></i>
-                <p>Nenhum flashcard criado</p>
+                <p>Nenhum flashcard criado para este tópico</p>
                 <button class="btn btn-primary btn-sm" onclick="abrirModalFlashcard()">
                     Criar primeiro flashcard
                 </button>
@@ -465,33 +528,16 @@ function renderizarFlashcards(flashcards) {
         <div class="flashcard-card" data-id="${flashcard.id_flashcard}">
             <div class="flashcard-header">
                 <h6 class="flashcard-title">${flashcard.titulo}</h6>
-                <span class="perguntas-count">${flashcard.perguntas ? flashcard.perguntas.length : 0}</span>
+                <div class="flashcard-actions">
+                    <span class="perguntas-count">${flashcard.perguntas ? flashcard.perguntas.length : 0}</span>
+                    <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerFlashcard(${flashcard.id_flashcard})" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
             ${flashcard.descricao ? `<p class="flashcard-description">${flashcard.descricao}</p>` : ''}
         </div>
     `).join('');
-}
-
-function limparFlashcards() {
-    const container = document.getElementById('flashcardsList');
-    if (!container) return;
-    
-    container.innerHTML = `
-        <div class="empty-state">
-            <i class="fas fa-layer-group"></i>
-            <p>Selecione um tópico para ver os flashcards</p>
-        </div>
-    `;
-    
-    const topicoNomeElement = document.getElementById('topico-nome');
-    if (topicoNomeElement) {
-        topicoNomeElement.textContent = 'Selecione um tópico';
-    }
-    
-    const btnAddFlashcard = document.getElementById('btn-add-flashcard');
-    if (btnAddFlashcard) {
-        btnAddFlashcard.style.display = 'none';
-    }
 }
 
 function abrirModalFlashcard() {
@@ -548,7 +594,214 @@ function criarFlashcard() {
         return;
     }
     
-    fetch(`${window.APP_BASE_URL}/api/independente/flashcards`, {
+    fetch(`./api/independente/flashcards`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            mostrarSucesso(data.message || 'Flashcard criado com sucesso!');
+            
+            // Fechar modal
+            const modalElement = document.getElementById('flashcardModal');
+            if (modalElement) {
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+            
+            // Limpar formulário
+            form.reset();
+            
+            // Recarregar flashcards
+            carregarFlashcards(topicoSelecionado);
+        } else {
+            mostrarErro(data.message || 'Erro ao criar flashcard');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao criar flashcard:', error);
+        mostrarErro('Erro ao criar flashcard: ' + error.message);
+    });
+}
+
+// ===== FUNÇÕES DE UTILIDADE =====
+
+function mostrarSucesso(mensagem) {
+    // Implementar toast de sucesso
+    console.log('Sucesso:', mensagem);
+    
+    // Criar toast temporário
+    const toast = document.createElement('div');
+    toast.className = 'alert alert-success position-fixed';
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${mensagem}
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function mostrarErro(mensagem) {
+    // Implementar toast de erro
+    console.error('Erro:', mensagem);
+    
+    // Criar toast temporário
+    const toast = document.createElement('div');
+    toast.className = 'alert alert-danger position-fixed';
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>
+        ${mensagem}
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+// Funções placeholder para funcionalidades futuras
+function editarDisciplina(id) {
+    console.log('Editar disciplina:', id);
+    mostrarErro('Funcionalidade de edição em desenvolvimento');
+}
+
+function removerDisciplina(id) {
+    console.log("Remover disciplina:", id);
+    mostrarErro("Funcionalidade de exclusão em desenvolvimento");
+}
+
+// ===== FUNÇÕES DE EXCLUSÃO =====
+
+function removerTopico(id) {
+    if (!confirm("Tem certeza que deseja excluir este tópico? Todos os flashcards associados também serão excluídos.")) {
+        return;
+    }
+
+    fetch(`./api/independente/topicos/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "",
+            "Accept": "application/json"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            mostrarSucesso(data.message || "Tópico excluído com sucesso!");
+            carregarTopicos(disciplinaSelecionada); // Recarregar tópicos da disciplina atual
+        } else {
+            mostrarErro(data.message || "Erro ao excluir tópico");
+        }
+    })
+    .catch(error => {
+        console.error("Erro ao excluir tópico:", error);
+        mostrarErro("Erro ao excluir tópico: " + error.message);
+    });
+}
+ /*
+function removerFlashcard(id) {
+    if (!confirm("Tem certeza que deseja excluir este flashcard?")) {
+        return;
+    }
+
+    fetch(`./api/independente/flashcards/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "",
+            "Accept": "application/json"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            mostrarSucesso(data.message || "Flashcard excluído com sucesso!");
+            carregarFlashcards(topicoSelecionado); // Recarregar flashcards do tópico atual
+        } else {
+            mostrarErro(data.message || "Erro ao excluir flashcard");
+        }
+    })
+    .catch(error => {
+        console.error("Erro ao excluir flashcard:", error);
+        mostrarErro("Erro ao excluir flashcard: " + error.message);
+    });
+    entById('flashcardForm');
+        if (form) {
+            form.reset();
+        }
+        
+        // Definir topico_id no formulário
+        const topicoIdInput = document.getElementById('topico_id');
+        if (topicoIdInput) {
+            topicoIdInput.value = topicoSelecionado;
+        }
+        
+        // Abrir modal usando Bootstrap 5
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        else {
+        console.error('Modal flashcardModal não encontrado');
+         } }
+*/
+
+function criarFlashcard() {
+    const form = document.getElementById('flashcardForm');
+    if (!form) {
+        mostrarErro('Formulário não encontrado');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    const data = {
+        titulo: formData.get('titulo'),
+        descricao: formData.get('descricao') || '',
+        topico_id: formData.get('topico_id') || topicoSelecionado
+    };
+    
+    // Validação básica
+    if (!data.titulo || data.titulo.trim().length < 3) {
+        mostrarErro('Título do flashcard deve ter pelo menos 3 caracteres');
+        return;
+    }
+    
+    if (!data.topico_id) {
+        mostrarErro('Tópico não selecionado');
+        return;
+    }
+    
+    fetch(`./api/independente/flashcards`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -647,4 +900,41 @@ function mostrarErro(mensagem) {
             document.body.removeChild(toast);
         }, 300);
     }, 6000);
+}
+
+// ===== FUNÇÕES DE ESTATÍSTICAS =====
+
+function carregarEstatisticas() {
+    fetch(`./api/independente/estatisticas`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            renderizarEstatisticas(data.estatisticas);
+        } else {
+            mostrarErro(data.message || 'Erro ao carregar estatísticas');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao carregar estatísticas:', error);
+        mostrarErro('Erro ao carregar estatísticas: ' + error.message);
+    });
+}
+
+function renderizarEstatisticas(estatisticas) {
+    document.getElementById('totalDisciplinas').textContent = estatisticas.total_disciplinas;
+    document.getElementById('totalTopicos').textContent = estatisticas.total_topicos;
+    document.getElementById('totalFlashcards').textContent = estatisticas.total_flashcards;
+    document.getElementById('totalPerguntas').textContent = estatisticas.total_perguntas;
 }

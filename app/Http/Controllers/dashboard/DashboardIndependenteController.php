@@ -131,9 +131,7 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    /**
-     * API: Buscar estatísticas do usuário independente
-     */
+    // FUNCIONANDO
     public function getEstatisticas()
     {
         $user = Auth::user();
@@ -177,9 +175,7 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    /**
-     * API: Criar nova disciplina
-     */
+    // FUNCIONANDO
     public function criarDisciplina(Request $request)
     {
         $request->validate([
@@ -202,15 +198,13 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    /**
-     * API: Criar novo tópico
-     */
+    // FUNCIONANDO
     public function criarTopico(Request $request)
     {
         $request->validate([
             'nome' => 'required|string|max:255',
             'descricao' => 'nullable|string|max:1000',
-            'disciplina_id' => 'required|exists:disciplinas,id_disciplina'
+            'disciplina_id' => 'required|exists:disciplina,id_disciplina'
         ]);
 
         $user = Auth::user();
@@ -240,19 +234,15 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    /**
-     * API: Criar novo flashcard
-     */
+    // FUNCIONANDO
     public function criarFlashcard(Request $request)
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descricao' => 'nullable|string|max:1000',
-            'topico_id' => 'required|exists:topicos,id_topico'
+            'topico_id' => 'required|exists:topico,id_topico'
         ]);
-
         $user = Auth::user();
-
         // Verificar se o tópico pertence a uma disciplina do usuário
         $topico = Topico::whereHas('disciplina', function ($query) use ($user) {
             $query->where('id_usuario', $user->id_usuario);
@@ -264,17 +254,71 @@ class DashboardIndependenteController extends Controller
                 'message' => 'Tópico não encontrado ou sem permissão'
             ], 404);
         }
-
         $flashcard = Flashcard::create([
             'titulo' => $request->titulo,
             'descricao' => $request->descricao,
             'id_topico' => $request->topico_id
         ]);
-
         return response()->json([
             'success' => true,
             'message' => 'Flashcard criado com sucesso!',
             'flashcard' => $flashcard
+        ]);
+    }
+
+    /**
+     * API: Excluir um tópico
+     */
+    public function excluirTopico($id)
+    {
+        $user = Auth::user();
+
+        $topico = Topico::where('id_topico', $id)
+            ->whereHas('disciplina', function ($query) use ($user) {
+                $query->where('id_usuario', $user->id_usuario);
+            })
+            ->first();
+
+        if (!$topico) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tópico não encontrado ou sem permissão para excluir.'
+            ], 404);
+        }
+
+        $topico->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tópico excluído com sucesso!'
+        ]);
+    }
+
+    /**
+     * API: Excluir um flashcard
+     */
+    public function excluirFlashcard($id)
+    {
+        $user = Auth::user();
+
+        $flashcard = Flashcard::where('id_flashcard', $id)
+            ->whereHas('topico.disciplina', function ($query) use ($user) {
+                $query->where('id_usuario', $user->id_usuario);
+            })
+            ->first();
+
+        if (!$flashcard) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Flashcard não encontrado ou sem permissão para excluir.'
+            ], 404);
+        }
+
+        $flashcard->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Flashcard excluído com sucesso!'
         ]);
     }
 }
