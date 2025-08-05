@@ -571,15 +571,19 @@ body {
     display: inline-block;
 }
 
-/* Cards de Flashcards */
+/* Cards de Flashcards - Layout Melhorado */
 .flashcard-card {
     background: var(--white);
     border: 1px solid var(--gray-200);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 0;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
 }
 
 .flashcard-card:hover {
@@ -589,6 +593,7 @@ body {
 }
 
 .flashcard-header {
+    padding: 20px 20px 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -599,23 +604,71 @@ body {
     font-weight: 600;
     color: var(--gray-800);
     margin: 0;
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.3;
+    flex: 1;
 }
 
-.perguntas-count {
-    background: var(--skull-orange);
-    color: var(--white);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
+.flashcard-actions {
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.flashcard-card:hover .flashcard-actions {
+    opacity: 1;
 }
 
 .flashcard-description {
     color: var(--gray-600);
     font-size: 14px;
-    margin: 0;
+    margin: 0 20px 16px 20px;
     line-height: 1.5;
+}
+
+/* Ocultar perguntas e respostas */
+.flashcard-perguntas {
+    display: none;
+}
+
+.flashcard-footer {
+    margin-top: auto;
+    padding: 16px 20px 20px 20px;
+    border-top: 1px solid var(--gray-200);
+    background: #f8f9fa;
+}
+
+.flashcard-footer .btn {
+    background: linear-gradient(135deg, var(--success-color), #20a83a);
+    color: var(--white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.flashcard-footer .btn:hover {
+    background: linear-gradient(135deg, #20a83a, var(--success-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+}
+
+.flashcard-footer .btn:active {
+    transform: translateY(0);
+}
+
+.flashcard-footer .btn i {
+    font-size: 14px;
 }
 
 /* Empty States */

@@ -1,6 +1,6 @@
 // ===== FUNÇÕES UTILITÁRIAS =====
 
-// FUNÇÃO PARA CARREGAR AS ESTATÍSTICAS DO DASHBOARD
+// FUNÇÃO PARA CARREGAR ESTATÍSTICAS DO SERVIDOR
 function carregarEstatisticas() {
     // FAZ UMA REQUISIÇÃO FETCH PARA A API DE ESTATÍSTICAS
     fetch(`./api/independente/estatisticas`, {
@@ -23,16 +23,21 @@ function carregarEstatisticas() {
     .then(data => {
         // PROCESSA OS DADOS RECEBIDOS DO SERVIDOR
         if (data.success) {
-            // SE A OPERAÇÃO FOI BEM-SUCEDIDA, ATUALIZA AS ESTATÍSTICAS NA INTERFACE
-            atualizarEstatisticas(data.data || data.estatisticas || {});
+            // ATUALIZA OS ELEMENTOS HTML COM OS DADOS DAS ESTATÍSTICAS
+            document.getElementById("totalDisciplinas").textContent = data.estatisticas.total_disciplinas;
+            document.getElementById("totalTopicos").textContent = data.estatisticas.total_topicos;
+            document.getElementById("totalFlashcards").textContent = data.estatisticas.total_flashcards;
+            document.getElementById("totalPerguntas").textContent = data.estatisticas.total_perguntas;
         } else {
-            // SE HOUVE ERRO, REGISTRA NO CONSOLE
-            console.error("Erro ao carregar estatísticas:", data.message);
+            // MOSTRA UMA MENSAGEM DE ERRO
+            mostrarErro(data.message || "Erro ao carregar estatísticas");
         }
     })
     .catch(error => {
         // TRATA ERROS DE REDE OU OUTROS ERROS DURANTE A REQUISIÇÃO
         console.error("Erro ao carregar estatísticas:", error);
+        // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
+        mostrarErro("Erro ao carregar estatísticas: " + error.message);
     });
 }
 

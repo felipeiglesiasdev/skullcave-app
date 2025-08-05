@@ -92,7 +92,7 @@ function voltarParaDisciplinas() {
     // MOSTRA A VIEW DE BOAS-VINDAS OU TÓPICOS DEPENDENDO SE HÁ DISCIPLINAS
     const disciplinasList = document.getElementById("disciplinasList");
     if (disciplinasList && disciplinasList.children.length > 0) {
-        mostrarView("topicos-view");
+        mostrarView("disciplinas-view");
     } else {
         mostrarView("welcome-state");
     }
