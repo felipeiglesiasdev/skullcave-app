@@ -80,6 +80,21 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
+                                            <div class="flashcards-list" id="flashcards-{{ $topico->id_topico }}">
+                                                @forelse($topico->flashcards ?? [] as $flashcard)
+                                                    <div class="flashcard-item">
+                                                        <i class="fas fa-layer-group"></i>
+                                                        <span>{{ $flashcard->titulo }}</span>
+                                                        <span class="count">{{ $flashcard->perguntas->count() ?? 0 }}</span>
+                                                    </div>
+                                                @empty
+                                                    <div class="empty-state">Nenhum flashcard</div>
+                                                @endforelse
+                                                <button class="add-flashcard-btn" onclick="openFlashcardModal({{ $topico->id_topico }})">
+                                                    <i class="fas fa-plus"></i>
+                                                    <span>Novo Flashcard</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     @empty
                                         <div class="empty-state">Nenhum tópico</div>
@@ -264,6 +279,7 @@
 
     <!-- JavaScript -->
     <script src="{{ asset("js/dashboard_independente/script.js") }}"></script>
+    <script src="{{ asset("js/dashboard_independente/flashcards.js") }}"></script>
     <script src="{{ asset("js/dashboard_independente/disciplinas.js") }}"></script>
     <script src="{{ asset("js/dashboard_independente/topicos.js") }}"></script>
     <script>
@@ -281,7 +297,46 @@
             if (topicoForm) {
                 topicoForm.addEventListener("submit", criarTopico);
             }
+
+            // INICIALIZA O FORMULÁRIO DE FLASHCARD
+            const flashcardForm = document.getElementById("flashcardForm");
+            if (flashcardForm) {
+                flashcardForm.addEventListener("submit", criarFlashcard);
+            }
         });
     </script>
+</body>
+</html>
+
+
+    <!-- Modal Flashcard -->
+    <div id="flashcardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Flashcard</h3>
+                <button class="close-btn" onclick="closeModal(\'flashcardModal\')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="flashcardForm">
+                    @csrf
+                    <input type="hidden" id="topico_id" name="topico_id">
+                    <div class="form-group">
+                        <label for="flashcard_titulo">Título do Flashcard</label>
+                        <input type="text" id="flashcard_titulo" name="titulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="flashcard_descricao">Descrição (opcional)</label>
+                        <textarea id="flashcard_descricao" name="descricao" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal(\'flashcardModal\')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Criar Flashcard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
