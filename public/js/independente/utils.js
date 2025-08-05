@@ -278,4 +278,3 @@ function copiarTexto(texto) {
         document.body.removeChild(textArea);
     }
 }
-

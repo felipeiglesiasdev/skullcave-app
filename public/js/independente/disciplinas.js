@@ -306,8 +306,8 @@ function editarDisciplina(disciplinaId) {
                 // VERIFICA SE A BUSCA FOI BEM-SUCEDIDA
                 if (data.success) {
                     // PREENCHE OS CAMPOS DO FORMULÁRIO COM OS DADOS DA DISCIPLINA
-                    form.querySelector("#nomeDisciplina").value = data.disciplina.nome;
-                    form.querySelector("#descricaoDisciplina").value = data.disciplina.descricao || "";
+                    form.querySelector("#nome").value = data.disciplina.nome;
+                    form.querySelector("#descricao").value = data.disciplina.descricao || "";
                     // DEFINE UM CAMPO OCULTO PARA O ID DA DISCIPLINA SENDO EDITADA
                     let idInput = form.querySelector("#disciplinaIdEdit");
                     if (!idInput) {
@@ -418,4 +418,3 @@ function salvarEdicaoDisciplina(disciplinaId) {
         mostrarErro("Erro ao atualizar disciplina: " + error.message);
     });
 }
-

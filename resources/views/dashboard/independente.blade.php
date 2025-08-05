@@ -373,6 +373,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
     <!-- JS -->
+    <script src="{{ asset('js/independente/toast.js') }}"></script>
     <script src="{{ asset('js/independente/global.js') }}"></script>
     <script src="{{ asset('js/independente/utils.js') }}"></script>
     <script src="{{ asset('js/independente/views.js') }}"></script>

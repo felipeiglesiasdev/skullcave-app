@@ -54,20 +54,26 @@ Route::middleware("auth")->group(function () {
         // Disciplinas
         Route::get("/disciplinas", [DashboardIndependenteController::class, "getDisciplinas"]);
         Route::post("/disciplinas", [DashboardIndependenteController::class, "criarDisciplina"]);
+        Route::get("/disciplinas/{id}", [DashboardIndependenteController::class, "getDisciplina"]);
         Route::put("/disciplinas/{id}", [DashboardIndependenteController::class, "editarDisciplina"]);
         Route::delete("/disciplinas/{id}", [DashboardIndependenteController::class, "excluirDisciplina"]);
         
         // Tópicos
         Route::get("/disciplinas/{disciplinaId}/topicos", [DashboardIndependenteController::class, "getTopicos"]);
         Route::post("/topicos", [DashboardIndependenteController::class, "criarTopico"]);
+        Route::get("/topicos/{id}", [DashboardIndependenteController::class, "getTopico"]);
         Route::put("/topicos/{id}", [DashboardIndependenteController::class, "editarTopico"]);
         Route::delete("/topicos/{id}", [DashboardIndependenteController::class, "excluirTopico"]);
         
         // Flashcards
         Route::get("/topicos/{topicoId}/flashcards", [DashboardIndependenteController::class, "getFlashcards"]);
+        Route::get("/flashcards/{id}", [DashboardIndependenteController::class, "getFlashcard"]);
         Route::post("/flashcards", [DashboardIndependenteController::class, "criarFlashcard"]);
         Route::put("/flashcards/{id}", [DashboardIndependenteController::class, "editarFlashcard"]);
         Route::delete("/flashcards/{id}", [DashboardIndependenteController::class, "excluirFlashcard"]);
+        
+        // Perguntas
+        Route::post("/perguntas", [DashboardIndependenteController::class, "criarPerguntaFlashcard"]);
         
         // Estatísticas
         Route::get("/estatisticas", [DashboardIndependenteController::class, "getEstatisticas"]);

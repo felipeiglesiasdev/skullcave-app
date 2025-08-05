@@ -322,8 +322,8 @@ function editarTopico(topicoId) {
                 // VERIFICA SE A BUSCA FOI BEM-SUCEDIDA
                 if (data.success) {
                     // PREENCHE OS CAMPOS DO FORMULÁRIO COM OS DADOS DO TÓPICO
-                    form.querySelector("#nomeTopico").value = data.topico.nome;
-                    form.querySelector("#descricaoTopico").value = data.topico.descricao || "";
+                    form.querySelector("#nome").value = data.topico.nome;
+                    form.querySelector("#descricao").value = data.topico.descricao || "";
                     // DEFINE UM CAMPO OCULTO PARA O ID DO TÓPICO SENDO EDITADO
                     let idInput = form.querySelector("#topicoIdEdit");
                     if (!idInput) {
@@ -434,4 +434,3 @@ function salvarEdicaoTopico(topicoId) {
         mostrarErro("Erro ao atualizar tópico: " + error.message);
     });
 }
-

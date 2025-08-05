@@ -354,4 +354,3 @@ function encerrarRevisao() {
         }
     }, 300);
 }
-
