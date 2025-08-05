@@ -176,6 +176,9 @@
                     <div class="view-header">
                         <h3>Tópicos</h3>
                         <p>Selecione um tópico para ver seus flashcards</p>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="voltarParaDisciplinas()">
+                            <i class="fas fa-arrow-left"></i> Voltar para Disciplinas
+                        </button>
                     </div>
                     <div id="topicosList" class="items-grid">
                         @forelse($disciplina->topicos ?? [] as $topico)
@@ -212,6 +215,9 @@
                     <div class="view-header">
                         <h3>Flashcards</h3>
                         <p>Seus flashcards para estudo</p>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="voltarParaTopicos()">
+                            <i class="fas fa-arrow-left"></i> Voltar para Tópicos
+                        </button>
                     </div>
                     <div id="flashcardsList" class="items-grid">
                         @forelse($topico->flashcards ?? [] as $flashcard)
@@ -219,15 +225,44 @@
                                 <div class="flashcard-header">
                                     <h6 class="flashcard-title">{{ $flashcard->titulo }}</h6>
                                     <div class="flashcard-actions">
-                                        <span class="perguntas-count">{{ count($flashcard->perguntas ?? []) }}</span>
-                                        <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerFlashcard({{ $flashcard->id_flashcard }})" title="Excluir">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                                    <button class="btn-action" onclick="event.stopPropagation(); editarFlashcard({{ $flashcard->id_flashcard }})" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerFlashcard({{ $flashcard->id_flashcard }})" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn-action" onclick="event.stopPropagation(); criarPerguntaResposta({{ $flashcard->id_flashcard }})" title="Adicionar Pergunta">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
-                                @if($flashcard->descricao)
-                                    <p class="flashcard-description">{{ $flashcard->descricao }}</p>
-                                @endif
+                            </div>
+                            @if($flashcard->descricao)
+                                <p class="flashcard-description">{{ $flashcard->descricao }}</p>
+                            @endif
+                            @if($flashcard->perguntas->count() > 0)
+                                <div class="flashcard-perguntas">
+                                    <h6>Perguntas e Respostas:</h6>
+                                    @foreach($flashcard->perguntas as $pergunta)
+                                        <div class="pergunta-item">
+                                            <div class="pergunta-texto">
+                                                <strong>P:</strong> {{ $pergunta->pergunta }}
+                                            </div>
+                                            <div class="resposta-texto">
+                                                <strong>R:</strong> {{ $pergunta->resposta }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="flashcard-footer">
+                                    <button class="btn btn-success btn-sm" onclick="iniciarRevisao({{ $flashcard->id_flashcard }})">
+                                        <i class="fas fa-play"></i> Iniciar Revisão
+                                    </button>
+                                </div>
+                            @else
+                                <div class="flashcard-footer">
+                                    <p class="text-muted">Adicione perguntas para poder iniciar a revisão</p>
+                                </div>
+                            @endif
                             </div>
                         @empty
                             <div class="empty-state">
@@ -338,7 +373,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
     <!-- JS -->
-    <script src="{{ asset('js/toast.js') }}"></script>
-    <script src="{{ asset('js/independente.js') }}"></script>
+    <script src="{{ asset('js/independente/global.js') }}"></script>
+    <script src="{{ asset('js/independente/utils.js') }}"></script>
+    <script src="{{ asset('js/independente/views.js') }}"></script>
+    <script src="{{ asset('js/independente/disciplinas.js') }}"></script>
+    <script src="{{ asset('js/independente/topicos.js') }}"></script>
+    <script src="{{ asset('js/independente/flashcards.js') }}"></script>
+    <script src="{{ asset('js/independente/revisao.js') }}"></script>
 </body>
 </html>

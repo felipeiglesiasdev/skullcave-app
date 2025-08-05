@@ -133,40 +133,5 @@ Route::middleware("auth")->group(function () {
         Route::get("/estatisticas", [DashboardProfessorController::class, "getEstatisticas"]);
     });
     
-    // ====================== ROTAS API GENÉRICAS (COMPATIBILIDADE E CONTROLLERS REFATORADOS) ======================
-    Route::prefix("api")->middleware(["auth"])->group(function () {
-        
-        // ROTA DE TESTE
-        Route::get("/teste", function () {
-            return response()->json(["message" => "Rota de teste API funcionando!"]);
-        });
-
-        // DISCIPLINAS - USANDO O CONTROLLER REFATORADO
-        Route::get("/disciplinas", [DisciplinaController::class, "index"]);
-        Route::post("/disciplinas", [DisciplinaController::class, "store"]);
-        Route::get("/disciplinas/{id}", [DisciplinaController::class, "show"]);
-        Route::put("/disciplinas/{id}", [DisciplinaController::class, "update"]);
-        Route::delete("/disciplinas/{id}", [DisciplinaController::class, "destroy"]);
-        
-        // TÓPICOS - USANDO O CONTROLLER REFATORADO
-        Route::get("/disciplinas/{disciplinaId}/topicos", [TopicoController::class, "index"]);
-        Route::post("/topicos", [TopicoController::class, "store"]);
-        Route::get("/topicos/{id}", [TopicoController::class, "show"]);
-        Route::put("/topicos/{id}", [TopicoController::class, "update"]);
-        Route::delete("/topicos/{id}", [TopicoController::class, "destroy"]);
-        
-        // FLASHCARDS - USANDO O CONTROLLER REFATORADO
-        Route::get("/topicos/{topicoId}/flashcards", [FlashcardController::class, "index"]);
-        Route::post("/flashcards", [FlashcardController::class, "store"]);
-        Route::get("/flashcards/{id}", [FlashcardController::class, "show"]);
-        Route::put("/flashcards/{id}", [FlashcardController::class, "update"]);
-        Route::delete("/flashcards/{id}", [FlashcardController::class, "destroy"]);
-        
-        // PERGUNTAS - USANDO O CONTROLLER REFATORADO
-        Route::get("/flashcards/{flashcardId}/perguntas", [PerguntaFlashcardController::class, "index"]);
-        Route::post("/perguntas", [PerguntaFlashcardController::class, "store"]);
-        Route::get("/perguntas/{id}", [PerguntaFlashcardController::class, "show"]);
-        Route::put("/perguntas/{id}", [PerguntaFlashcardController::class, "update"]);
-        Route::delete("/perguntas/{id}", [PerguntaFlashcardController::class, "destroy"]);
-    });
+    
 });
