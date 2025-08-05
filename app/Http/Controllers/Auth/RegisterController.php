@@ -83,7 +83,7 @@ class RegisterController extends Controller
         // 'PASSWORD': SENHA, COM CONFIRMAÇÃO E MÍNIMO DE 8 CARACTERES.
         $data = $request->validate([
             "name" => "required|string|max:255",
-            "email" => "required|email|unique:usuarios,email|max:255",
+            "email" => "required|email|unique:usuario,email|max:255",
             "password" => "required|confirmed|min:8",
         ]);
 

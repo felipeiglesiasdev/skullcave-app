@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PerguntaFlashcard;
-use App\Models\FlashcardIndependente;
+use App\Models\Flashcard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +13,7 @@ class PerguntaFlashcardController extends Controller
     public function index($flashcardId)
     {
         // Verifica se o flashcard pertence ao usuário
-        $flashcard = FlashcardIndependente::where("id_flashcard", $flashcardId)
+        $flashcard = Flashcard::where("id_flashcard", $flashcardId)
                                             ->whereHas("topico.disciplina", function ($query) {
                                                 $query->where("id_usuario", Auth::id());
                                             })
@@ -30,11 +30,11 @@ class PerguntaFlashcardController extends Controller
         $request->validate([
             "pergunta" => "required|string",
             "resposta" => "required|string",
-            "flashcard_id" => "required|exists:flashcards_independentes,id_flashcard"
+            "flashcard_id" => "required|exists:flashcard,id_flashcard"
         ]);
 
         // Verifica se o flashcard pertence ao usuário
-        $flashcard = FlashcardIndependente::where("id_flashcard", $request->flashcard_id)
+        $flashcard = Flashcard::where("id_flashcard", $request->flashcard_id)
                                             ->whereHas("topico.disciplina", function ($query) {
                                                 $query->where("id_usuario", Auth::id());
                                             })

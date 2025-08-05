@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,9 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    use HasFactory;
     public function up(): void
     {
-        Schema::create("usuarios", function (Blueprint $table) {
+        Schema::create("usuario", function (Blueprint $table) {
             $table->increments("id_usuario"); // COLUNA AUTO_INCREMENT
             $table->primary("id_usuario"); // DEFINIÇÃO EXPLÍCITA DA CHAVE PRIMÁRIA
             $table->string("nome", 100)->nullable(false); // NOT NULL
@@ -22,10 +23,7 @@ return new class extends Migration
             $table->string("remember_token", 100)->nullable(); // PODE SER NULL
             $table->timestamp("updated_at")->nullable(); // PODE SER NULL
 
-            // ÍNDICES
-            $table->index("nome", "idx_usuario_nome");
-            $table->index("email", "idx_usuario_email");
-            $table->index(["nome", "email"], "idx_usuario_nome_email");
+
         });
     }
 
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("usuarios");
+        Schema::dropIfExists("usuario");
     }
 };

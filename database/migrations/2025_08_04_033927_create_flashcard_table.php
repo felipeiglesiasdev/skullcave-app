@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,9 +10,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    use HasFactory;
     public function up(): void
     {
-        Schema::create("flashcards_independentes", function (Blueprint $table) {
+        Schema::create("flashcard", function (Blueprint $table) {
             $table->increments("id_flashcard");
             $table->unsignedInteger("id_topico");
             $table->string("titulo", 255);
@@ -19,7 +21,7 @@ return new class extends Migration
             $table->dateTime("data_criacao")->useCurrent();
             $table->timestamps();
 
-            $table->foreign("id_topico")->references("id_topico")->on("topicos_independentes")->onDelete("cascade");
+            $table->foreign("id_topico")->references("id_topico")->on("topico")->onDelete("cascade");
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("flashcards_independentes");
+        Schema::dropIfExists("flashcard");
     }
 };

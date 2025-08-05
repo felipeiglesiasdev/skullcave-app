@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DisciplinaIndependenteController;
-use App\Http\Controllers\TopicoIndependenteController;
-use App\Http\Controllers\FlashcardIndependenteController;
+use App\Http\Controllers\DisciplinaController;
+use App\Http\Controllers\TopicoController;
+use App\Http\Controllers\FlashcardController;
 use App\Http\Controllers\PerguntaFlashcardController;
 
 // ====================== ROTAS PÚBLICAS ======================
@@ -40,28 +40,28 @@ Route::middleware("auth")->group(function () {
             return response()->json(["message" => "Rota de teste API funcionando!"]);
         });
 
-        // DISCIPLINAS
-        Route::get("/disciplinas", [DisciplinaIndependenteController::class, "index"]);
-        Route::post("/disciplinas", [DisciplinaIndependenteController::class, "store"]);
-        Route::get("/disciplinas/{id}", [DisciplinaIndependenteController::class, "show"]);
-        Route::put("/disciplinas/{id}", [DisciplinaIndependenteController::class, "update"]);
-        Route::delete("/disciplinas/{id}", [DisciplinaIndependenteController::class, "destroy"]);
+        // DISCIPLINAS PARA INDEPENDENTES (ACESSO INDIVIDUAL) E ALUNOS
+        Route::get("/disciplinas", [DisciplinaController::class, "index"]);
+        Route::post("/disciplinas", [DisciplinaController::class, "store"]);
+        Route::get("/disciplinas/{id}", [DisciplinaController::class, "show"]);
+        Route::put("/disciplinas/{id}", [DisciplinaController::class, "update"]);
+        Route::delete("/disciplinas/{id}", [DisciplinaController::class, "destroy"]);
         
-        // TÓPICOS
-        Route::get("/disciplinas/{disciplinaId}/topicos", [TopicoIndependenteController::class, "index"]);
-        Route::post("/topicos", [TopicoIndependenteController::class, "store"]);
-        Route::get("/topicos/{id}", [TopicoIndependenteController::class, "show"]);
-        Route::put("/topicos/{id}", [TopicoIndependenteController::class, "update"]);
-        Route::delete("/topicos/{id}", [TopicoIndependenteController::class, "destroy"]);
+        // TÓPICOS PARA INDEPENDENTES (ACESSO INDIVIDUAL) E ALUNOS
+        Route::get("/disciplinas/{disciplinaId}/topicos", [TopicoController::class, "index"]);
+        Route::post("/topicos", [TopicoController::class, "store"]);
+        Route::get("/topicos/{id}", [TopicoController::class, "show"]);
+        Route::put("/topicos/{id}", [TopicoController::class, "update"]);
+        Route::delete("/topicos/{id}", [TopicoController::class, "destroy"]);
         
-        // FLASHCARDS
-        Route::get("/topicos/{topicoId}/flashcards", [FlashcardIndependenteController::class, "index"]);
-        Route::post("/flashcards", [FlashcardIndependenteController::class, "store"]);
-        Route::get("/flashcards/{id}", [FlashcardIndependenteController::class, "show"]);
-        Route::put("/flashcards/{id}", [FlashcardIndependenteController::class, "update"]);
-        Route::delete("/flashcards/{id}", [FlashcardIndependenteController::class, "destroy"]);
+        // FLASHCARDS 
+        Route::get("/topicos/{topicoId}/flashcards", [FlashcardController::class, "index"]);
+        Route::post("/flashcards", [FlashcardController::class, "store"]);
+        Route::get("/flashcards/{id}", [FlashcardController::class, "show"]);
+        Route::put("/flashcards/{id}", [FlashcardController::class, "update"]);
+        Route::delete("/flashcards/{id}", [FlashcardController::class, "destroy"]);
         
-        // PERGUNTAS
+        // PERGUNTAS 
         Route::get("/flashcards/{flashcardId}/perguntas", [PerguntaFlashcardController::class, "index"]);
         Route::post("/perguntas", [PerguntaFlashcardController::class, "store"]);
         Route::get("/perguntas/{id}", [PerguntaFlashcardController::class, "show"]);

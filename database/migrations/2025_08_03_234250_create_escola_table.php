@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,16 +10,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    use HasFactory;
     public function up(): void
     {
-        Schema::create("disciplinas_independentes", function (Blueprint $table) {
-            $table->increments("id_disciplina");
-            $table->unsignedInteger("id_usuario");
+        Schema::create("escola", function (Blueprint $table) {
+            $table->increments("id_escola");
             $table->string("nome", 255);
-            $table->text("descricao")->nullable();
+            $table->string("cnpj", 18)->unique();
+            $table->text("endereco");
+            $table->string("telefone", 20);
             $table->timestamps();
-
-            $table->foreign("id_usuario")->references("id_usuario")->on("usuarios")->onDelete("cascade");
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("disciplinas_independentes");
+        Schema::dropIfExists("escola");
     }
 };

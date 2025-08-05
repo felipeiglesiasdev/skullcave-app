@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FlashcardIndependente;
-use App\Models\TopicoIndependente;
+use App\Models\Flashcard;
+use App\Models\Topico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class FlashcardIndependenteController extends Controller
+class FlashcardController extends Controller
 {
-    // Lista todos os flashcards de um tópico específico
+    // Lista todos os flashcardds de um tópico específico
     public function index($topicoId)
     {
         // Verifica se o tópico pertence ao usuário
-        $topico = TopicoIndependente::where("id_topico", $topicoId)
+        $topico = Topico::where("id_topico", $topicoId)
                                     ->whereHas("disciplina", function ($query) {
                                         $query->where("id_usuario", Auth::id());
                                     })
@@ -23,25 +23,25 @@ class FlashcardIndependenteController extends Controller
         return response()->json($flashcards);
     }
 
-    // Cria um novo flashcard
+    // Cria um novo flashcardd
     public function store(Request $request)
     {
         // Validação básica
         $request->validate([
             "titulo" => "required|string|max:255",
             "descricao" => "nullable|string",
-            "topico_id" => "required|exists:topicos_independentes,id_topico"
+            "topico_id" => "required|exists:topico,id_topico"
         ]);
 
         // Verifica se o tópico pertence ao usuário
-        $topico = TopicoIndependente::where("id_topico", $request->topico_id)
+        $topico = Topico::where("id_topico", $request->topico_id)
                                     ->whereHas("disciplina", function ($query) {
                                         $query->where("id_usuario", Auth::id());
                                     })
                                     ->firstOrFail();
 
-        // Cria o flashcard
-        $flashcard = FlashcardIndependente::create([
+        // Cria o flashcardd
+        $flashcard = Flashcard::create([
             "id_topico" => $request->topico_id,
             "titulo" => $request->titulo,
             "descricao" => $request->descricao,
@@ -55,10 +55,10 @@ class FlashcardIndependenteController extends Controller
         ], 201);
     }
 
-    // Exibe um flashcard específico
+    // Exibe um flashcardd específico
     public function show($id)
     {
-        $flashcard = FlashcardIndependente::where("id_flashcard", $id)
+        $flashcard = Flashcard::where("id_flashcard", $id)
                                             ->whereHas("topico.disciplina", function ($query) {
                                                 $query->where("id_usuario", Auth::id());
                                             })
@@ -68,7 +68,7 @@ class FlashcardIndependenteController extends Controller
         return response()->json($flashcard);
     }
 
-    // Atualiza um flashcard existente
+    // Atualiza um flashcardd existente
     public function update(Request $request, $id)
     {
         // Validação básica
@@ -77,8 +77,8 @@ class FlashcardIndependenteController extends Controller
             "descricao" => "nullable|string",
         ]);
 
-        // Busca o flashcard do usuário
-        $flashcard = FlashcardIndependente::where("id_flashcard", $id)
+        // Busca o flashcardd do usuário
+        $flashcard = Flashcard::where("id_flashcard", $id)
                                             ->whereHas("topico.disciplina", function ($query) {
                                                 $query->where("id_usuario", Auth::id());
                                             })
@@ -97,10 +97,10 @@ class FlashcardIndependenteController extends Controller
         ]);
     }
 
-    // Remove um flashcard
+    // Remove um flashcardd
     public function destroy($id)
     {
-        $flashcard = FlashcardIndependente::where("id_flashcard", $id)
+        $flashcard = Flashcard::where("id_flashcard", $id)
                                             ->whereHas("topico.disciplina", function ($query) {
                                                 $query->where("id_usuario", Auth::id());
                                             })

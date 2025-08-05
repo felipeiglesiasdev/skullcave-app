@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DisciplinaIndependente;
+use App\Models\Disciplina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class DisciplinaIndependenteController extends Controller
+class DisciplinaController extends Controller
 {
     // LISTA TODAS AS DISCIPLINAS DO USUÁRIO AUTENTICADO
     public function index()
     {
         // BUSCA TODAS AS DISCIPLINAS DO USUÁRIO LOGADO
-        $disciplinas = DisciplinaIndependente::where("id_usuario", Auth::id())->get();
+        $disciplinas = Disciplina::where("id_usuario", Auth::id())->get();
         // RETORNA AS DISCIPLINAS EM FORMATO JSON
         return response()->json($disciplinas);
     }
@@ -21,7 +21,7 @@ class DisciplinaIndependenteController extends Controller
     public function store(Request $request)
     {
         // CRIA UMA NOVA INSTÂNCIA DA DISCIPLINA
-        $disciplina = new DisciplinaIndependente();
+        $disciplina = new Disciplina();
     
         // DEFINE O ID DO USUÁRIO COMO O USUÁRIO LOGADO
         $disciplina->id_usuario = Auth::id();
@@ -47,9 +47,9 @@ class DisciplinaIndependenteController extends Controller
     public function show($id)
     {
         // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO LOGADO
-        $disciplina = DisciplinaIndependente::where("id_disciplina", $id)
+        $disciplina = Disciplina::where("id_disciplina", $id)
                                             ->where("id_usuario", Auth::id())
-                                            ->with('topicos.flashcards') // CARREGA OS TÓPICOS E FLASHCARDS RELACIONADOS
+                                            ->with('topico.flashcard') // CARREGA OS TÓPICOS E FLASHCARDS RELACIONADOS
                                             ->first();
         
         // RETORNA A DISCIPLINA ENCONTRADA
@@ -63,7 +63,7 @@ class DisciplinaIndependenteController extends Controller
     public function update(Request $request, $id)
     {
         // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO LOGADO
-        $disciplina = DisciplinaIndependente::where("id_disciplina", $id)
+        $disciplina = Disciplina::where("id_disciplina", $id)
                                             ->where("id_usuario", Auth::id())
                                             ->first();
 
@@ -88,7 +88,7 @@ class DisciplinaIndependenteController extends Controller
     public function destroy($id)
     {
         // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO LOGADO
-        $disciplina = DisciplinaIndependente::where("id_disciplina", $id)
+        $disciplina = Disciplina::where("id_disciplina", $id)
                                             ->where("id_usuario", Auth::id())
                                             ->first();
         

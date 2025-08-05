@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,19 +10,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    use HasFactory;
     public function up(): void
     {
-        Schema::create("professores", function (Blueprint $table) {
+        Schema::create("aluno", function (Blueprint $table) {
             $table->unsignedInteger("id_usuario")->primary(); // CHAVE PRIMÁRIA ESTRANGEIRA (UNSIGNED)
             $table->unsignedInteger("id_escola")->nullable(); // PODE SER NULL
-            $table->string("titulacao", 50)->nullable(); // PODE SER NULL
-
-            // ÍNDICES
-            $table->index(["id_usuario", "id_escola"], "idx_professor_escola");
+            $table->string("matricula", 50)->nullable(); // PODE SER NULL
 
             // CHAVES ESTRANGEIRAS
-            $table->foreign("id_usuario", "fk_professor_usuario")->references("id_usuario")->on("usuarios")->onDelete("cascade");
-            $table->foreign("id_escola", "fk_professor_escola")->references("id_escola")->on("escolas")->onDelete("set null");
+            $table->foreign("id_usuario", "fk_aluno_usuario")->references("id_usuario")->on("usuario")->onDelete("cascade");
+            $table->foreign("id_escola", "fk_aluno_escola")->references("id_escola")->on("escola")->onDelete("set null");
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("professores");
+        Schema::dropIfExists("aluno");
     }
 };

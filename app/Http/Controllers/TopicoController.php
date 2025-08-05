@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TopicoIndependente;
-use App\Models\DisciplinaIndependente;
+use App\Models\Topico;
+use App\Models\Disciplina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TopicoIndependenteController extends Controller
+class TopicoController extends Controller
 {
     // Lista todos os tópicos de uma disciplina específica
     public function index($disciplinaId)
     {
         // Verifica se a disciplina pertence ao usuário
-        $disciplina = DisciplinaIndependente::where("id_disciplina", $disciplinaId)
+        $disciplina = Disciplina::where("id_disciplina", $disciplinaId)
                                             ->where("id_usuario", Auth::id())
                                             ->firstOrFail();
 
-        $topicos = $disciplina->topicos()->with('flashcards')->get();
+        $topicos = $disciplina->topicos()->with('flashcard')->get();
         return response()->json($topicos);
     }
 
@@ -28,16 +28,16 @@ class TopicoIndependenteController extends Controller
         $request->validate([
             "nome" => "required|string|max:255",
             "descricao" => "nullable|string",
-            "disciplina_id" => "required|exists:disciplinas_independentes,id_disciplina"
+            "disciplina_id" => "required|exists:disciplina,id_disciplina"
         ]);
 
         // Verifica se a disciplina pertence ao usuário
-        $disciplina = DisciplinaIndependente::where("id_disciplina", $request->disciplina_id)
+        $disciplina = Disciplina::where("id_disciplina", $request->disciplina_id)
                                             ->where("id_usuario", Auth::id())
                                             ->firstOrFail();
 
         // Cria o tópico
-        $topico = TopicoIndependente::create([
+        $topico = Topico::create([
             "id_disciplina" => $request->disciplina_id,
             "nome" => $request->nome,
             "descricao" => $request->descricao,
@@ -53,11 +53,11 @@ class TopicoIndependenteController extends Controller
     // Exibe um tópico específico
     public function show($id)
     {
-        $topico = TopicoIndependente::where("id_topico", $id)
+        $topico = Topico::where("id_topico", $id)
                                     ->whereHas("disciplina", function ($query) {
                                         $query->where("id_usuario", Auth::id());
                                     })
-                                    ->with('flashcards.perguntas')
+                                    ->with('flashcard.pergunta')
                                     ->firstOrFail();
         
         return response()->json($topico);
@@ -73,7 +73,7 @@ class TopicoIndependenteController extends Controller
         ]);
 
         // Busca o tópico do usuário
-        $topico = TopicoIndependente::where("id_topico", $id)
+        $topico = Topico::where("id_topico", $id)
                                     ->whereHas("disciplina", function ($query) {
                                         $query->where("id_usuario", Auth::id());
                                     })
@@ -95,7 +95,7 @@ class TopicoIndependenteController extends Controller
     // Remove um tópico
     public function destroy($id)
     {
-        $topico = TopicoIndependente::where("id_topico", $id)
+        $topico = Topico::where("id_topico", $id)
                                     ->whereHas("disciplina", function ($query) {
                                         $query->where("id_usuario", Auth::id());
                                     })
