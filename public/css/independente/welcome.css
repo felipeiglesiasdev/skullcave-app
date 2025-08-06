@@ -59,3 +59,49 @@
     box-shadow: 0 4px 12px rgba(255, 109, 77, 0.3);
 }
 
+/* ========================================= */
+/* Cabeçalho de Boas-Vindas         */
+/* ========================================= */
+
+/* Container principal que alinha o ícone e o texto */
+.welcome-header {
+    display: flex; /* Ativa o layout flexível */
+    align-items: center; /* Alinha verticalmente o ícone e o texto no centro */
+}
+
+/* Estilo do container do ícone */
+.welcome-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--skull-orange), #e55a3d);
+    border-radius: 50%;
+    margin-top: 21px;
+    margin-right: 15px;
+    justify-content: center;
+    color: var(--white);
+    font-size: 20px;
+}
+
+/* Container para o texto (h2 e p) */
+.welcome-text {
+    display: flex;
+    flex-direction: column; /* Coloca o h2 e o p um embaixo do outro */
+}
+
+/* Estilo do título h2 */
+.welcome-text h2 {
+    font-size: 1.1rem; /* Letra um pouco menor que o padrão */
+    font-weight: 600;
+    color: #171717;
+    font-family: 'Poppins';
+    margin: 0; /* Remove a margem padrão para um alinhamento mais preciso */
+}
+
+/* Estilo do parágrafo p */
+.welcome-text p {
+    font-weight: 400;
+    font-size: 0.95rem; /* Letra pequena */
+    font-family: 'Poppins';
+    color: #171717; /* Cor de texto secundária (cinza) */
+    margin: 4px 0 0 0; /* Adiciona um pequeno espaço acima do parágrafo */
+}

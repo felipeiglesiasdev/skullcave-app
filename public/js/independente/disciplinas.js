@@ -6,30 +6,21 @@ function selecionarDisciplina(disciplinaId) {
     disciplinaSelecionada = disciplinaId;
     // LIMPA A SELEÇÃO DE TÓPICO
     topicoSelecionado = null;
-    
     // REMOVE A CLASSE 'active' DE TODOS OS CARTÕES DE DISCIPLINA
     document.querySelectorAll(".disciplina-card").forEach(card => {
         card.classList.remove("active");
     });
-    
     // SELECIONA O CARTÃO DA DISCIPLINA CORRESPONDENTE AO ID
     const disciplinaCard = document.querySelector(`[data-id="${disciplinaId}"]`);
     // VERIFICA SE O CARTÃO DA DISCIPLINA EXISTE
     if (disciplinaCard) {
         // ADICIONA A CLASSE 'active' AO CARTÃO DA DISCIPLINA SELECIONADA
         disciplinaCard.classList.add("active");
-        
-        // ATUALIZA O BREADCRUMB COM O NOME DA DISCIPLINA
-        const nomeDisciplina = disciplinaCard.querySelector("h6").textContent;
-        atualizarBreadcrumb(nomeDisciplina);
-        
         // MOSTRA O BOTÃO DE ADICIONAR TÓPICO E ESCONDE O DE ADICIONAR FLASHCARD
         atualizarBotoesAcao(true, false);
     }
-    
     // MOSTRA A VIEW DE TÓPICOS
     mostrarView("topicos-view");
-    
     // CARREGA OS TÓPICOS DA DISCIPLINA SELECIONADA
     carregarTopicos(disciplinaId);
 }
@@ -77,12 +68,13 @@ function renderizarDisciplinas(disciplinas) {
     // SELECIONA O CONTÊINER ONDE AS DISCIPLINAS SERÃO EXIBIDAS
     const container = document.getElementById("disciplinasList");
     // VERIFICA SE O CONTÊINER FOI ENCONTRADO
+    /*
     if (!container) {
         // REGISTRA UM ERRO NO CONSOLE SE O CONTÊINER NÃO FOR ENCONTRADO
         console.error("Container disciplinasList não encontrado");
         return; // ENCERRA A FUNÇÃO
     }
-    
+    */
     // VERIFICA SE NÃO HÁ DISCIPLINAS OU SE A LISTA ESTÁ VAZIA
     if (!disciplinas || disciplinas.length === 0) {
         // DEFINE O CONTEÚDO HTML PARA EXIBIR UM ESTADO VAZIO (NENHUMA DISCIPLINA CRIADA)
@@ -103,7 +95,7 @@ function renderizarDisciplinas(disciplinas) {
     
     // SE HÁ DISCIPLINAS, ESCONDE O ESTADO DE BOAS-VINDAS E RENDERIZA NORMALMENTE
     // MOSTRA A VIEW DE TÓPICOS COMO PADRÃO APÓS CARREGAR DISCIPLINAS
-    mostrarView("topicos-view");
+    mostrarView("welcome-state");
     // GERA O HTML PARA CADA DISCIPLINA E INSERE NO CONTÊINER
     container.innerHTML = disciplinas.map((disciplina, index) => `
         <div class="disciplina-card ${index === 0 ? "active" : ""}" 
@@ -127,10 +119,17 @@ function renderizarDisciplinas(disciplinas) {
         </div>
     `).join(""); // UNE OS ELEMENTOS DO ARRAY EM UMA ÚNICA STRING HTML
     
+    // REMOVE A CLASSE 'active' DE TODOS OS CARTÕES
+    document.querySelectorAll(".disciplina-card, .topico-card").forEach(card => {
+        card.classList.remove("active");
+    });
+
+    /*
     // SE HOUVER DISCIPLINAS, SELECIONA A PRIMEIRA AUTOMATICAMENTE
     if (disciplinas.length > 0) {
         selecionarDisciplina(disciplinas[0].id_disciplina);
     }
+        */
 }
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE DISCIPLINA

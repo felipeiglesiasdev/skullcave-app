@@ -4,7 +4,7 @@
         <h3>Tópicos</h3>
         <p>Selecione um tópico para ver seus flashcards</p>
         <button class="btn btn-sm btn-outline-secondary" onclick="voltarParaDisciplinas()">
-            <i class="fas fa-arrow-left"></i> Voltar para Disciplinas
+            <i class="fas fa-arrow-left"></i> Início
         </button>
     </div>
     <div id="topicosList" class="items-grid">

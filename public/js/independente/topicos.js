@@ -99,7 +99,6 @@ function renderizarTopicos(topicos) {
 function selecionarTopico(topicoId) {
     // ATUALIZA A VARIÁVEL GLOBAL COM O ID DO TÓPICO SELECIONADO
     topicoSelecionado = topicoId;
-    
     // REMOVE A CLASSE 'active' DE TODOS OS CARTÕES DE TÓPICO
     document.querySelectorAll(".topico-card").forEach(card => {
         card.classList.remove("active");
@@ -111,22 +110,15 @@ function selecionarTopico(topicoId) {
     if (topicoCard) {
         // ADICIONA A CLASSE 'active' AO CARTÃO DO TÓPICO SELECIONADO
         topicoCard.classList.add("active");
-        
-        // ATUALIZA O BREADCRUMB COM O NOME DA DISCIPLINA E DO TÓPICO
-        const nomeTopico = topicoCard.querySelector("h6").textContent;
-        const disciplinaNome = document.getElementById("disciplina-nome").textContent;
-        atualizarBreadcrumb(disciplinaNome, nomeTopico);
-        
         // MOSTRA OS BOTÕES DE ADICIONAR TÓPICO E FLASHCARD
         atualizarBotoesAcao(true, true);
     }
-    
     // MOSTRA A VIEW DE FLASHCARDS
     mostrarView("flashcards-view");
-    
     // CARREGA OS FLASHCARDS DO TÓPICO SELECIONADO
     carregarFlashcards(topicoId);
 }
+
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE TÓPICO
 function abrirModalTopico(topicoId, nome, descricao) {

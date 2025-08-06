@@ -64,20 +64,20 @@ Route::middleware("auth")->group(function () {
         Route::post("/topicos", [DashboardIndependenteController::class, "criarTopico"]); // FUNCIONANDO
         Route::get("/topicos/{id}", [DashboardIndependenteController::class, "getTopico"]); // FUNCIONANDO
         Route::delete("/topicos/{id}", [DashboardIndependenteController::class, "excluirTopico"]); // FUNCIONANDO
-        Route::put("/topicos/{id}", [DashboardIndependenteController::class, "atualizarTopico"]); 
+        Route::put("/topicos/{id}", [DashboardIndependenteController::class, "atualizarTopico"]); // FUNCIONANDO
         
         // Flashcards
-        Route::get("/topicos/{topicoId}/flashcards", [DashboardIndependenteController::class, "getFlashcards"]);
-        Route::get("/flashcards/{id}", [DashboardIndependenteController::class, "getFlashcard"]);
-        Route::post("/flashcards", [DashboardIndependenteController::class, "criarFlashcard"]);
-        Route::put("/flashcards/{id}", [DashboardIndependenteController::class, "editarFlashcard"]);
-        Route::delete("/flashcards/{id}", [DashboardIndependenteController::class, "excluirFlashcard"]);
+        Route::get("/topicos/{topicoId}/flashcards", [DashboardIndependenteController::class, "getFlashcards"]); // FUNCIONANDO
+        Route::get("/flashcards/{id}", [DashboardIndependenteController::class, "getFlashcard"]); // FUNCIONANDO
+        Route::post("/flashcards", [DashboardIndependenteController::class, "criarFlashcard"]); // FUNCIONANDO
+        Route::put("/flashcards/{id}", [DashboardIndependenteController::class, "editarFlashcard"]); // FUNCIONANDO
+        Route::delete("/flashcards/{id}", [DashboardIndependenteController::class, "excluirFlashcard"]); // FUNCIONANDO
         
         // Perguntas
-        Route::post("/perguntas", [DashboardIndependenteController::class, "criarPerguntaFlashcard"]);
+        Route::post("/perguntas", [DashboardIndependenteController::class, "criarPerguntaFlashcard"]); // FUNCIONANDO
         
         // Estatísticas
-        Route::get("/estatisticas", [DashboardIndependenteController::class, "getEstatisticas"]);
+        Route::get("/estatisticas", [DashboardIndependenteController::class, "getEstatisticas"]); // FUNCIONANDO
     });
     
     // ===== APIs PARA ALUNOS =====

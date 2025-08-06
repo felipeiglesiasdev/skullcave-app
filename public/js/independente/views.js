@@ -89,15 +89,12 @@ function voltarParaDisciplinas() {
         card.classList.remove("active");
     });
     
-    // MOSTRA A VIEW DE BOAS-VINDAS OU TÓPICOS DEPENDENDO SE HÁ DISCIPLINAS
-    const disciplinasList = document.getElementById("disciplinasList");
-    if (disciplinasList && disciplinasList.children.length > 0) {
-        mostrarView("disciplinas-view");
-    } else {
-        mostrarView("welcome-state");
-    }
-    
 
+    mostrarView("welcome-state");
+    
+    
+    // DESATIVA OS BOTÕES DE ADICIONAR TÓPICO E FLASHCARD
+    atualizarBotoesAcao(false, false);
     
     // LIMPA O BREADCRUMB
     atualizarBreadcrumb("", null);
