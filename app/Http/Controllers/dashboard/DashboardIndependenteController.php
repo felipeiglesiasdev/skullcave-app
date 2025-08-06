@@ -631,7 +631,7 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    // MÉTODO PARA ATUALIZAR UMA DISCIPLINA EXISTENTE
+    // MÉTODO PARA ATUALIZAR UM TÓPICO EXISTENTE
     public function atualizarTopico(Request $request, $id)
     {
         // VALIDA OS DADOS DA REQUISIÇÃO
@@ -643,29 +643,31 @@ class DashboardIndependenteController extends Controller
         // OBTÉM O USUÁRIO AUTENTICADO
         $user = Auth::user();
 
-        // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO
+        // BUSCA O TÓPICO PELO ID E VERIFICA SE PERTENCE A UMA DISCIPLINA DO USUÁRIO
         $topico = Topico::where("id_topico", $id)
-            ->where("id_usuario", $user->id_usuario)
+            ->whereHas("disciplina", function ($query) use ($user) {
+                $query->where("id_usuario", $user->id_usuario);
+            })
             ->first();
 
-        // SE A DISCIPLINA NÃO FOR ENCONTRADA OU NÃO PERTENCER AO USUÁRIO
+        // SE O TÓPICO NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
         if (!$topico) {
             // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
             return response()->json([
                 "success" => false,
-                "message" => "topico não encontrada ou sem permissão para atualizar."
+                "message" => "Tópico não encontrado ou sem permissão para atualizar."
             ], 404);
         }
 
-        // ATUALIZA OS DADOS DA DISCIPLINA
+        // ATUALIZA OS DADOS DO TÓPICO
         $topico->nome = $request->nome;
         $topico->descricao = $request->descricao;
         $topico->save(); // SALVA AS ALTERAÇÕES NO BANCO DE DADOS
 
-        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A DISCIPLINA ATUALIZADA
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E O TÓPICO ATUALIZADO
         return response()->json([
             "success" => true,
-            "message" => "topico atualizada com sucesso!",
+            "message" => "Tópico atualizado com sucesso!",
             "topico" => $topico
         ]);
     }

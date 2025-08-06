@@ -20,7 +20,7 @@
                     <span class="topicos-count">{{ count($disciplina->topicos ?? []) }} tópicos</span>
                 </div>
                 <div class="disciplina-actions">
-                    <button class="btn-action btn-edit" onclick="event.stopPropagation(); editarDisciplina({{ $disciplina->id_disciplina }}, '{{ $disciplina->nome }}', '{{ $disciplina->descricao }}')" title="Editar">
+                    <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalDisciplina({{ $disciplina->id_disciplina }}, '{{ $disciplina->nome }}', '{{ $disciplina->descricao }}')" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerDisciplina({{ $disciplina->id_disciplina }})" title="Excluir">

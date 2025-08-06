@@ -20,7 +20,7 @@
                     <span class="flashcards-count">{{ count($topico->flashcards ?? []) }} flashcards</span>
                 </div>
                 <div class="topico-actions">
-                    <button class="btn-action btn-edit-topico" onclick="event.stopPropagation(); editarTopico({{ $topico->id_topico }}, '{{ $topico->nome }}', '{{ $topico->descricao }}')" title="Editar">
+                    <button class="btn-action btn-edit-topico" onclick="event.stopPropagation(); abrirModalTopico({{ $topico->id_topico }}, '{{ $topico->nome }}', '{{ $topico->descricao }}')" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button class="btn-action" onclick="event.stopPropagation(); removerTopico({{ $topico->id_topico }})" title="Excluir">
