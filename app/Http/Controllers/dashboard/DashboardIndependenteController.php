@@ -290,7 +290,7 @@ class DashboardIndependenteController extends Controller
     }
 
     // ===================================================================================
-    // MÉTODO PARA CRIAR UM NOVO FLASHCARD
+    // MÉTODO PARA CRIAR UM NOVO FLASHCARD (APENAS NOME E DESCRIÇÃO)
     public function criarFlashcard(Request $request)
     {
         // VALIDA OS DADOS DA REQUISIÇÃO
@@ -329,6 +329,158 @@ class DashboardIndependenteController extends Controller
             "success" => true,
             "message" => "Flashcard criado com sucesso!",
             "flashcard" => $flashcard
+        ]);
+    }
+
+    // ===================================================================================
+    // MÉTODO PARA EDITAR UM FLASHCARD (ALTERAR NOME E DESCRIÇÃO)
+    public function editarFlashcard(Request $request, $id)
+    {
+        // VALIDA OS DADOS DA REQUISIÇÃO
+        $request->validate([
+            "titulo" => "required|string|max:255", // TÍTULO É OBRIGATÓRIO E STRING
+            "descricao" => "nullable|string|max:1000" // DESCRIÇÃO É OPCIONAL E STRING
+        ]);
+
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // BUSCA O FLASHCARD PELO ID E VERIFICA SE PERTENCE A UM TÓPICO DE UMA DISCIPLINA DO USUÁRIO
+        $flashcard = Flashcard::where("id_flashcard", $id)
+            ->whereHas("topico.disciplina", function ($query) use ($user) {
+                $query->where("id_usuario", $user->id_usuario);
+            })
+            ->first();
+
+        // SE O FLASHCARD NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
+        if (!$flashcard) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "Flashcard não encontrado ou sem permissão para editar."
+            ], 404);
+        }
+
+        // ATUALIZA O TÍTULO E A DESCRIÇÃO DO FLASHCARD
+        $flashcard->titulo = $request->titulo;
+        $flashcard->descricao = $request->descricao;
+        $flashcard->save(); // SALVA AS ALTERAÇÕES NO FLASHCARD
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E O FLASHCARD ATUALIZADO
+        return response()->json([
+            "success" => true,
+            "message" => "Flashcard atualizado com sucesso!",
+            "flashcard" => $flashcard
+        ]);
+    }
+
+    // ===================================================================================
+    // MÉTODO PARA GERENCIAR PERGUNTAS (LISTA DE TODAS AS PERGUNTAS DE UM FLASHCARD)
+    public function gerenciarPerguntas($flashcardId)
+    {
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // BUSCA O FLASHCARD PELO ID E VERIFICA SE PERTENCE A UM TÓPICO DE UMA DISCIPLINA DO USUÁRIO
+        $flashcard = Flashcard::where("id_flashcard", $flashcardId)
+            ->whereHas("topico.disciplina", function ($query) use ($user) {
+                $query->where("id_usuario", $user->id_usuario);
+            })
+            ->with(["perguntas"])
+            ->first();
+
+        // SE O FLASHCARD NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
+        if (!$flashcard) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "Flashcard não encontrado ou sem permissão para gerenciar perguntas."
+            ], 404);
+        }
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM AS PERGUNTAS DO FLASHCARD
+        return response()->json([
+            "success" => true,
+            "flashcard" => $flashcard,
+            "perguntas" => $flashcard->perguntas
+        ]);
+    }
+
+    // ===================================================================================
+    // MÉTODO PARA ADICIONAR UMA NOVA PERGUNTA A UM FLASHCARD
+    public function adicionarPergunta(Request $request)
+    {
+        // VALIDA OS DADOS DA REQUISIÇÃO
+        $request->validate([
+            "id_flashcard" => "required|exists:flashcard,id_flashcard", // ID DO FLASHCARD É OBRIGATÓRIO E DEVE EXISTIR
+            "pergunta" => "required|string|max:1000", // PERGUNTA É OBRIGATÓRIA E STRING
+            "resposta" => "required|string|max:1000" // RESPOSTA É OBRIGATÓRIA E STRING
+        ]);
+
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // VERIFICA SE O FLASHCARD PERTENCE A UMA DISCIPLINA DO USUÁRIO AUTENTICADO
+        $flashcard = Flashcard::where("id_flashcard", $request->id_flashcard)
+            ->whereHas("topico.disciplina", function ($query) use ($user) {
+                $query->where("id_usuario", $user->id_usuario);
+            })
+            ->first();
+
+        // SE O FLASHCARD NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
+        if (!$flashcard) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "Flashcard não encontrado ou sem permissão para adicionar pergunta."
+            ], 404);
+        }
+
+        // CRIA UMA NOVA PERGUNTA E RESPOSTA NO BANCO DE DADOS
+        $perguntaFlashcard = PerguntaFlashcard::create([
+            "id_flashcard" => $request->id_flashcard,
+            "pergunta" => $request->pergunta,
+            "resposta" => $request->resposta
+        ]);
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A PERGUNTA CRIADA
+        return response()->json([
+            "success" => true,
+            "message" => "Pergunta adicionada com sucesso!",
+            "pergunta" => $perguntaFlashcard
+        ]);
+    }
+
+    // ===================================================================================
+    // MÉTODO PARA EXCLUIR UMA PERGUNTA ESPECÍFICA
+    public function excluirPergunta($id)
+    {
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // BUSCA A PERGUNTA PELO ID E VERIFICA SE PERTENCE A UM FLASHCARD DO USUÁRIO
+        $pergunta = PerguntaFlashcard::where("id_pergunta", $id)
+            ->whereHas("flashcard.topico.disciplina", function ($query) use ($user) {
+                $query->where("id_usuario", $user->id_usuario);
+            })
+            ->first();
+
+        // SE A PERGUNTA NÃO FOR ENCONTRADA OU NÃO PERTENCER AO USUÁRIO
+        if (!$pergunta) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "Pergunta não encontrada ou sem permissão para excluir."
+            ], 404);
+        }
+
+        // EXCLUI A PERGUNTA DO BANCO DE DADOS
+        $pergunta->delete();
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO
+        return response()->json([
+            "success" => true,
+            "message" => "Pergunta excluída com sucesso!"
         ]);
     }
 
@@ -426,136 +578,6 @@ class DashboardIndependenteController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Disciplina excluída com sucesso!"
-        ]);
-    }
-
-    // ===================================================================================
-    // API: MÉTODO PARA CRIAR UMA PERGUNTA E RESPOSTA PARA UM FLASHCARD
-    public function criarPerguntaFlashcard(Request $request)
-    {
-        // VALIDA OS DADOS DA REQUISIÇÃO
-        $request->validate([
-            "id_flashcard" => "required|exists:flashcard,id_flashcard", // ID DO FLASHCARD É OBRIGATÓRIO E DEVE EXISTIR
-            "pergunta" => "required|string|max:1000", // PERGUNTA É OBRIGATÓRIA E STRING
-            "resposta" => "required|string|max:1000", // RESPOSTA É OBRIGATÓRIA E STRING
-        ]);
-
-        // OBTÉM O USUÁRIO AUTENTICADO
-        $user = Auth::user();
-
-        // VERIFICA SE O FLASHCARD PERTENCE A UMA DISCIPLINA DO USUÁRIO AUTENTICADO
-        $flashcard = Flashcard::where("id_flashcard", $request->id_flashcard)
-            ->whereHas("topico.disciplina", function ($query) use ($user) {
-                $query->where("id_usuario", $user->id_usuario);
-            })
-            ->first();
-
-        // SE O FLASHCARD NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
-        if (!$flashcard) {
-            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
-            return response()->json([
-                "success" => false,
-                "message" => "Flashcard não encontrado ou sem permissão para adicionar pergunta."
-            ], 404);
-        }
-
-        // CRIA UMA NOVA PERGUNTA E RESPOSTA NO BANCO DE DADOS
-        $perguntaFlashcard = PerguntaFlashcard::create([
-            "id_flashcard" => $request->id_flashcard,
-            "pergunta" => $request->pergunta,
-            "resposta" => $request->resposta,
-        ]);
-
-        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A PERGUNTA CRIADA
-        return response()->json([
-            "success" => true,
-            "message" => "Pergunta e resposta criadas com sucesso!",
-            "perguntaFlashcard" => $perguntaFlashcard
-        ]);
-    }
-
-    // ===================================================================================
-    // API: MÉTODO PARA EDITAR UM FLASHCARD (TÍTULO, DESCRIÇÃO E PERGUNTAS/RESPOSTAS)
-    public function editarFlashcard(Request $request, $id)
-    {
-        // VALIDA OS DADOS DA REQUISIÇÃO
-        $request->validate([
-            "titulo" => "required|string|max:255", // TÍTULO É OBRIGATÓRIO E STRING
-            "descricao" => "nullable|string|max:1000", // DESCRIÇÃO É OPCIONAL E STRING
-            "perguntas" => "array", // PERGUNTAS DEVE SER UM ARRAY
-            "perguntas.*.id_pergunta_flashcard" => "nullable|exists:pergunta_flashcard,id_pergunta_flashcard", // ID DA PERGUNTA É OPCIONAL E DEVE EXISTIR SE FOR FORNECIDO
-            "perguntas.*.pergunta" => "required|string|max:1000", // PERGUNTA É OBRIGATÓRIA E STRING
-            "perguntas.*.resposta" => "required|string|max:1000", // RESPOSTA É OBRIGATÓRIA E STRING
-        ]);
-
-        // OBTÉM O USUÁRIO AUTENTICADO
-        $user = Auth::user();
-
-        // BUSCA O FLASHCARD PELO ID E VERIFICA SE PERTENCE A UM TÓPICO DE UMA DISCIPLINA DO USUÁRIO
-        $flashcard = Flashcard::where("id_flashcard", $id)
-            ->whereHas("topico.disciplina", function ($query) use ($user) {
-                $query->where("id_usuario", $user->id_usuario);
-            })
-            ->first();
-
-        // SE O FLASHCARD NÃO FOR ENCONTRADO OU NÃO PERTENCER AO USUÁRIO
-        if (!$flashcard) {
-            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
-            return response()->json([
-                "success" => false,
-                "message" => "Flashcard não encontrado ou sem permissão para editar."
-            ], 404);
-        }
-
-        // ATUALIZA O TÍTULO E A DESCRIÇÃO DO FLASHCARD
-        $flashcard->titulo = $request->titulo;
-        $flashcard->descricao = $request->descricao;
-        $flashcard->save(); // SALVA AS ALTERAÇÕES NO FLASHCARD
-
-        // OBTÉM OS IDS DAS PERGUNTAS EXISTENTES PARA CONTROLE DE EXCLUSÃO
-        $existingPerguntaIds = $flashcard->perguntas->pluck("id_pergunta_flashcard")->toArray();
-        $updatedPerguntaIds = []; // ARRAY PARA ARMAZENAR IDS DAS PERGUNTAS ATUALIZADAS/CRIADAS
-
-        // PROCESSA AS PERGUNTAS E RESPOSTAS (CRIAR OU ATUALIZAR)
-        if ($request->has("perguntas")) {
-            foreach ($request->perguntas as $perguntaData) {
-                // VERIFICA SE A PERGUNTA JÁ EXISTE (TEM ID)
-                if (isset($perguntaData["id_pergunta_flashcard"]) && $perguntaData["id_pergunta_flashcard"]) {
-                    // ATUALIZA UMA PERGUNTA EXISTENTE
-                    $pergunta = PerguntaFlashcard::where("id_pergunta_flashcard", $perguntaData["id_pergunta_flashcard"])
-                        ->where("id_flashcard", $flashcard->id_flashcard)
-                        ->first();
-
-                    // SE A PERGUNTA EXISTIR, ATUALIZA SEUS DADOS
-                    if ($pergunta) {
-                        $pergunta->pergunta = $perguntaData["pergunta"];
-                        $pergunta->resposta = $perguntaData["resposta"];
-                        $pergunta->save(); // SALVA AS ALTERAÇÕES NA PERGUNTA
-                        $updatedPerguntaIds[] = $pergunta->id_pergunta_flashcard; // ADICIONA O ID À LISTA DE ATUALIZADOS
-                    }
-                } else {
-                    // CRIA UMA NOVA PERGUNTA
-                    $pergunta = PerguntaFlashcard::create([
-                        "id_flashcard" => $flashcard->id_flashcard,
-                        "pergunta" => $perguntaData["pergunta"],
-                        "resposta" => $perguntaData["resposta"],
-                    ]);
-                    $updatedPerguntaIds[] = $pergunta->id_pergunta_flashcard; // ADICIONA O ID DA NOVA PERGUNTA
-                }
-            }
-        }
-
-        // IDENTIFICA E EXCLUI PERGUNTAS QUE NÃO FORAM INCLUÍDAS NA REQUISIÇÃO (REMOVIDAS PELO USUÁRIO)
-        $perguntasToDelete = array_diff($existingPerguntaIds, $updatedPerguntaIds);
-        if (!empty($perguntasToDelete)) {
-            PerguntaFlashcard::whereIn("id_pergunta_flashcard", $perguntasToDelete)->delete();
-        }
-
-        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E O FLASHCARD ATUALIZADO
-        return response()->json([
-            "success" => true,
-            "message" => "Flashcard atualizado com sucesso!",
-            "flashcard" => $flashcard->load("perguntas") // RECARREGA AS PERGUNTAS PARA INCLUIR NA RESPOSTA
         ]);
     }
 
@@ -672,5 +694,49 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
-    
+    public function criarPerguntaFlashcard(Request $request)
+{
+    $request->validate([
+        "id_flashcard" => "required|exists:flashcard,id_flashcard",
+        "pergunta" => "required|string|max:1000",
+        "resposta" => "required|string|max:1000"
+    ]);
+
+    $user = Auth::user();
+
+    // Verifica se o flashcard pertence ao usuário
+    $flashcard = Flashcard::where("id_flashcard", $request->id_flashcard)
+        ->whereHas("topico.disciplina", function ($query) use ($user) {
+            $query->where("id_usuario", $user->id_usuario);
+        })
+        ->first();
+
+    if (!$flashcard) {
+        return response()->json([
+            "success" => false,
+            "message" => "Flashcard não encontrado ou sem permissão"
+        ], 404);
+    }
+
+    $pergunta = PerguntaFlashcard::create([
+        "id_flashcard" => $request->id_flashcard,
+        "pergunta" => $request->pergunta,
+        "resposta" => $request->resposta
+    ]);
+
+    // Carrega o relacionamento para a resposta
+    $pergunta->load('flashcard');
+
+    return response()->json([
+        "success" => true,
+        "message" => "Pergunta adicionada com sucesso!",
+        "pergunta" => $pergunta,
+        "flashcard_id" => $flashcard->id_flashcard
+    ]);
+}
+
+
+
+
+
 }
