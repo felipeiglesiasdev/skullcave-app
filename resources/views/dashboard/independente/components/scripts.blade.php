@@ -10,5 +10,4 @@
 <script src="{{ asset('js/independente/topicos.js') }}"></script>
 <script src="{{ asset('js/independente/flashcards.js') }}"></script>
 <script src="{{ asset('js/independente/revisao.js') }}"></script>
-<script src="{{ asset('js/independente.js') }}"></script>
 

@@ -84,7 +84,7 @@ function renderizarTopicos(topicos) {
                 <span class="flashcards-count">${topico.flashcards ? topico.flashcards.length : 0} flashcards</span>
             </div>
             <div class="topico-actions">
-                <button class="btn-action btn-edit-topico" onclick="event.stopPropagation(); editarTopico(${topico.id_topico}, '${topico.nome}', '${topico.descricao || ''}')" title="Editar">
+                <button class="btn-action btn-edit-topico" onclick="event.stopPropagation(); abrirModalTopico(${topico.id_topico}, '${topico.nome}', '${topico.descricao || ''}')" title="Editar">
                     <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerTopico(${topico.id_topico})" title="Excluir">
@@ -129,7 +129,7 @@ function selecionarTopico(topicoId) {
 }
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE TÓPICO
-function abrirModalTopico(topicoId = null, nome = '', descricao = '') {
+function abrirModalTopico(topicoId, nome, descricao) {
     // VERIFICA SE UMA DISCIPLINA ESTÁ SELECIONADA
     if (!disciplinaSelecionada) {
         // MOSTRA UM ERRO SE NENHUMA DISCIPLINA ESTIVER SELECIONADA
@@ -146,15 +146,16 @@ function abrirModalTopico(topicoId = null, nome = '', descricao = '') {
     // SELECIONA O FORMULÁRIO DENTRO DO MODAL
     const form = document.getElementById("topicoForm");
     // SELECIONA OS CAMPOS DO FORMULÁRIO
-    const nomeInput = document.getElementById("topicoNome"); // ASSUMINDO ID topicoNome PARA O CAMPO NOME DO TÓPICO
-    const descricaoInput = document.getElementById("topicoDescricao"); // ASSUMENDO ID topicoDescricao PARA O CAMPO DESCRIÇÃO DO TÓPICO
+    const nomeInput = document.getElementById("nome_topico"); // ASSUMINDO ID topicoNome PARA O CAMPO NOME DO TÓPICO
+    const descricaoInput = document.getElementById("descricao_topico"); // ASSUMENDO ID topicoDescricao PARA O CAMPO DESCRIÇÃO DO TÓPICO
     const disciplinaIdInput = document.getElementById("disciplina_id");
 
+    /*
     // VERIFICA SE OS ELEMENTOS NECESSÁRIOS FORAM ENCONTRADOS
-    if (!modalElement || !modalTitle || !submitButton || !form || !nomeInput || !descricaoInput || !disciplinaIdInput) {
+    if (!modalElement || !modalTitle || !submitButton || !form || !nomeInput ) {
         console.error("Um ou mais elementos do modal de tópico não foram encontrados.");
         return;
-    }
+    }*/
 
     // LIMPA OS CAMPOS DO FORMULÁRIO
     form.reset();

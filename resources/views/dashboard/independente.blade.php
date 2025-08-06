@@ -12,8 +12,8 @@
         <div class="main-content">
             <x-independente.header 
                 :breadcrumb="$breadcrumb ?? []" 
-                :showTopicoButton="$showTopicoButton ?? false"
-                :showFlashcardButton="$showFlashcardButton ?? false" 
+                :showTopicoButton="$showTopicoButton ?? true"
+                :showFlashcardButton="$showFlashcardButton ?? true" 
             />
 
             <!-- Área de Conteúdo -->

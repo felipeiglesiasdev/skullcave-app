@@ -97,8 +97,7 @@ function voltarParaDisciplinas() {
         mostrarView("welcome-state");
     }
     
-    // ESCONDE OS BOTÕES DE AÇÃO
-    atualizarBotoesAcao(false, false);
+
     
     // LIMPA O BREADCRUMB
     atualizarBreadcrumb("", null);
@@ -123,8 +122,6 @@ function voltarParaTopicos() {
     // MOSTRA A VIEW DE TÓPICOS
     mostrarView("topicos-view");
     
-    // ATUALIZA OS BOTÕES DE AÇÃO
-    atualizarBotoesAcao(true, false);
     
     // ATUALIZA O BREADCRUMB APENAS COM A DISCIPLINA
     const disciplinaCard = document.querySelector(`[data-id="${disciplinaSelecionada}"]`);

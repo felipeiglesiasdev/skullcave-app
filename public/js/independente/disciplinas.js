@@ -98,8 +98,6 @@ function renderizarDisciplinas(disciplinas) {
         
         // MOSTRA O ESTADO DE BOAS-VINDAS SE NÃO HOUVER DISCIPLINAS
         mostrarView("welcome-state");
-        // ESCONDE OS BOTÕES DE ADICIONAR TÓPICO E FLASHCARD
-        atualizarBotoesAcao(false, false);
         return; // ENCERRA A FUNÇÃO
     }
     
