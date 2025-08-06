@@ -1,4 +1,8 @@
 // ===== FUNÇÕES DE TÓPICOS =====
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA CARREGAR OS TÓPICOS DE UMA DISCIPLINA ESPECÍFICA
 function carregarTopicos(disciplinaId) {
@@ -7,8 +11,7 @@ function carregarTopicos(disciplinaId) {
         // REGISTRA UM ERRO NO CONSOLE
         console.error("ID da disciplina não fornecido");
         return; // ENCERRA A FUNÇÃO
-    }
-    
+    }  
     // FAZ UMA REQUISIÇÃO FETCH PARA A API DE TÓPICOS DA DISCIPLINA
     fetch(`./api/independente/disciplinas/${disciplinaId}/topicos`, {
         method: "GET", // MÉTODO HTTP GET
@@ -44,18 +47,15 @@ function carregarTopicos(disciplinaId) {
         mostrarErro("Erro ao carregar tópicos: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA RENDERIZAR (EXIBIR) OS TÓPICOS NA INTERFACE
 function renderizarTopicos(topicos) {
     // SELECIONA O CONTÊINER ONDE OS TÓPICOS SERÃO EXIBIDOS
     const container = document.getElementById("topicosList");
-    // VERIFICA SE O CONTÊINER FOI ENCONTRADO
-    if (!container) {
-        // REGISTRA UM ERRO NO CONSOLE SE O CONTÊINER NÃO FOR ENCONTRADO
-        console.error("Container topicosList não encontrado");
-        return; // ENCERRA A FUNÇÃO
-    }
-    
     // VERIFICA SE NÃO HÁ TÓPICOS OU SE A LISTA ESTÁ VAZIA
     if (!topicos || topicos.length === 0) {
         // DEFINE O CONTEÚDO HTML PARA EXIBIR UM ESTADO VAZIO (NENHUM TÓPICO CRIADO)
@@ -94,6 +94,10 @@ function renderizarTopicos(topicos) {
         </div>
     `).join(""); // UNE OS ELEMENTOS DO ARRAY EM UMA ÚNICA STRING HTML
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA SELECIONAR UM TÓPICO
 function selecionarTopico(topicoId) {
@@ -118,6 +122,9 @@ function selecionarTopico(topicoId) {
     // CARREGA OS FLASHCARDS DO TÓPICO SELECIONADO
     carregarFlashcards(topicoId);
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE TÓPICO
@@ -142,12 +149,6 @@ function abrirModalTopico(topicoId, nome, descricao) {
     const descricaoInput = document.getElementById("descricao_topico"); // ASSUMENDO ID topicoDescricao PARA O CAMPO DESCRIÇÃO DO TÓPICO
     const disciplinaIdInput = document.getElementById("disciplina_id");
 
-    /*
-    // VERIFICA SE OS ELEMENTOS NECESSÁRIOS FORAM ENCONTRADOS
-    if (!modalElement || !modalTitle || !submitButton || !form || !nomeInput ) {
-        console.error("Um ou mais elementos do modal de tópico não foram encontrados.");
-        return;
-    }*/
 
     // LIMPA OS CAMPOS DO FORMULÁRIO
     form.reset();
@@ -179,21 +180,17 @@ function abrirModalTopico(topicoId, nome, descricao) {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA CRIAR UM NOVO TÓPICO
 function criarTopico() {
     // SELECIONA O FORMULÁRIO DE TÓPICO
     const form = document.getElementById("topicoForm");
-    // VERIFICA SE O FORMULÁRIO FOI ENCONTRADO
-    if (!form) {
-        // MOSTRA UM ERRO SE O FORMULÁRIO NÃO FOR ENCONTRADO
-        mostrarErro("Formulário não encontrado");
-        return; // ENCERRA A FUNÇÃO
-    }
-    
     // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
     const formData = new FormData(form);
-    
     // EXTRAI OS DADOS DO FORMULÁRIO PARA UM OBJETO JAVASCRIPT
     const data = {
         nome: formData.get("nome"), // OBTÉM O VALOR DO CAMPO 'nome'
@@ -266,6 +263,10 @@ function criarTopico() {
         mostrarErro("Erro ao criar tópico: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // ===== FUNÇÃO PARA EXCLUIR TÓPICO =====
 function removerTopico(topicoId) {
@@ -311,9 +312,12 @@ function removerTopico(topicoId) {
         mostrarErro("Erro ao excluir tópico: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA EDITAR UM TÓPICO EXISTENTE
-// RECEBE O ID DO TÓPICO A SER EDITADO
 function editarTopico(topicoId) {
     // SELECIONA O FORMULÁRIO DE TÓPICO
     const form = document.getElementById("topicoForm");

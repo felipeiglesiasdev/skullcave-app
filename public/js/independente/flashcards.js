@@ -124,6 +124,7 @@ function renderizarFlashcards(flashcards) {
             `}
         </div>
     `).join(""); // UNE OS ELEMENTOS DO ARRAY EM UMA ÚNICA STRING HTML
+    atualizarBotoesAcao(false, true);
 }
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO DE FLASHCARD

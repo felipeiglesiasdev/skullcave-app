@@ -67,14 +67,6 @@ function carregarDisciplinas() {
 function renderizarDisciplinas(disciplinas) {
     // SELECIONA O CONTÊINER ONDE AS DISCIPLINAS SERÃO EXIBIDAS
     const container = document.getElementById("disciplinasList");
-    // VERIFICA SE O CONTÊINER FOI ENCONTRADO
-    /*
-    if (!container) {
-        // REGISTRA UM ERRO NO CONSOLE SE O CONTÊINER NÃO FOR ENCONTRADO
-        console.error("Container disciplinasList não encontrado");
-        return; // ENCERRA A FUNÇÃO
-    }
-    */
     // VERIFICA SE NÃO HÁ DISCIPLINAS OU SE A LISTA ESTÁ VAZIA
     if (!disciplinas || disciplinas.length === 0) {
         // DEFINE O CONTEÚDO HTML PARA EXIBIR UM ESTADO VAZIO (NENHUMA DISCIPLINA CRIADA)
