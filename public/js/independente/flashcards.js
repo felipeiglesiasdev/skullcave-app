@@ -85,7 +85,7 @@ function renderizarFlashcards(flashcards) {
                     <button class="btn-action" onclick="editarFlashcard(${flashcard.id_flashcard})" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn-action btn-delete" onclick="removerFlashcard(${flashcard.id_flashcard})" title="Excluir">
+                    <button class="btn-action btn-delete" onclick="excluirFlashcard(${flashcard.id_flashcard})" title="Excluir">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -167,9 +167,9 @@ function abrirModalFlashcard() {
 // ***************************************************************************************************************
 // ***************************************************************************************************************
 
-//FUNCIONANDO
+// FUNCIONANDO 
 // FUNÇÃO PARA CRIAR UM NOVO FLASHCARD
-function criarFlashcard() {
+function adicionarFlashcard() {
     // SELECIONA O FORMULÁRIO DE FLASHCARD
     const form = document.getElementById("flashcardForm");
     // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
@@ -252,9 +252,68 @@ function criarFlashcard() {
 // ***************************************************************************************************************
 
 
-//FUNCIONANDO
-// ===== FUNÇÃO PARA EXCLUIR FLASHCARD =====
+// FUNCIONANDO 
+// FUNÇÃO PARA EDITAR FLASHCARD
+function editarFlashcard(flashcardId) {
+    // BUSCAR OS DADOS ATUAIS DO FLASHCARD PARA PREENCHER O FORMULÁRIO DE EDIÇÃO
+    fetch(`./api/independente/flashcards/${flashcardId}`, {
+        method: "GET", // MÉTODO HTTP GET
+        headers: { // CABEÇALHOS DA REQUISIÇÃO
+            "Content-Type": "application/json", // TIPO DE CONTEÚDO JSON
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "", // TOKEN CSRF
+            "Accept": "application/json" // ACEITA RESPOSTAS JSON
+        }
+    })
+    .then(response => {
+        // VERIFICAR SE A RESPOSTA FOI BEM-SUCEDIDA
+        if (!response.ok) {
+            // SE NÃO FOI BEM-SUCEDIDA, LANÇA UM ERRO
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // RETORNA A RESPOSTA COMO JSON
+        return response.json();
+    })
+    .then(data => {
+        // PROCESSAR RESPOSTA DO SERVIDOR
+        if (data.success) {
+            // SE A OPERAÇÃO FOI BEM-SUCEDIDA, ABRE O MODAL DE EDIÇÃO COM OS DADOS DO FLASHCARD
+            abrirModalEdicaoFlashcard(data.flashcard);
+        } else {
+            // SE HOUVE ERRO, MOSTRA UMA MENSAGEM DE ERRO
+            mostrarErro(data.message || "Erro ao buscar flashcard para edição");
+        }
+    })
+    .catch(error => {
+        // TRATAR ERROS DE REDE OU OUTROS ERROS
+        console.error("Erro ao buscar flashcard para edição:", error);
+        // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
+        mostrarErro("Erro ao buscar flashcard para edição: " + error.message);
+    });
+}
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
+// ALIAS PARA MANTER COMPATIBILIDADE
+function criarFlashcard() {
+    adicionarFlashcard();
+}
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
+// ALIAS PARA MANTER COMPATIBILIDADE
 function removerFlashcard(flashcardId) {
+    excluirFlashcard(flashcardId);
+}
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
+
+//FUNCIONANDO 
+// FUNÇÃO PARA EXCLUIR FLASHCARD
+function excluirFlashcard(flashcardId) {
     // CONFIRMAR AÇÃO DE EXCLUSÃO COM O USUÁRIO
     if (!confirm("Tem certeza que deseja excluir este flashcard e todas as suas perguntas associadas?")) {
         return; // SE O USUÁRIO CANCELAR, ENCERRA A FUNÇÃO
@@ -297,179 +356,19 @@ function removerFlashcard(flashcardId) {
         mostrarErro("Erro ao excluir flashcard: " + error.message);
     });
 }
+
 // ***************************************************************************************************************
 // ***************************************************************************************************************
 // ***************************************************************************************************************
 
 
-//FUNCIONANDO
-// ===== FUNÇÃO PARA CRIAR PERGUNTA E RESPOSTA EM UM FLASHCARD =====
-function criarPerguntaResposta(flashcardId) {
-    // CRIA O HTML DO MODAL DINAMICAMENTE PARA CRIAÇÃO DE PERGUNTA
-    const modalHtml = `
-        <div class="modal fade" id="criarPerguntaModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Adicionar Pergunta e Resposta</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="criarPerguntaForm">
-                            <div class="mb-3">
-                                <label for="novaPergunta" class="form-label">Pergunta</label>
-                                <input type="text" class="form-control" id="novaPergunta" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="novaResposta" class="form-label">Resposta</label>
-                                <textarea class="form-control" id="novaResposta" rows="3" required></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" onclick="salvarNovaPergunta(${flashcardId})">Salvar Pergunta</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // REMOVE QUALQUER MODAL DE CRIAÇÃO EXISTENTE PARA EVITAR DUPLICAÇÃO
-    const existingModal = document.getElementById("criarPerguntaModal");
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    // ADICIONA O HTML DO MODAL AO CORPO DO DOCUMENTO
-    document.body.insertAdjacentHTML("beforeend", modalHtml);
-    // CRIA UMA NOVA INSTÂNCIA DO MODAL DO BOOTSTRAP 5 E O MOSTRA
-    const modal = new bootstrap.Modal(document.getElementById("criarPerguntaModal"));
-    modal.show();
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-
-//FUNCIONANDO
-// ===== FUNÇÃO PARA SALVAR NOVA PERGUNTA =====
-function salvarNovaPergunta(flashcardId) {
-    // OBTÉM OS VALORES DOS CAMPOS DO FORMULÁRIO
-    const pergunta = document.getElementById("novaPergunta").value.trim();
-    const resposta = document.getElementById("novaResposta").value.trim();
-
-    // VALIDAÇÃO BÁSICA DOS CAMPOS
-    if (!pergunta) {
-        mostrarErro("Pergunta é obrigatória");
-        return;
-    }
-    if (!resposta) {
-        mostrarErro("Resposta é obrigatória");
-        return;
-    }
-
-    // FAZ UMA REQUISIÇÃO POST PARA CRIAR A PERGUNTA E RESPOSTA
-    fetch(`./api/independente/perguntas`, {
-        method: "POST", // MÉTODO HTTP POST
-        headers: { // CABEÇALHOS DA REQUISIÇÃO
-            "Content-Type": "application/json", // TIPO DE CONTEÚDO JSON
-            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "", // TOKEN CSRF
-            "Accept": "application/json" // ACEITA RESPOSTAS JSON
-        },
-        body: JSON.stringify({ // CORPO DA REQUISIÇÃO EM FORMATO JSON
-            id_flashcard: flashcardId,
-            pergunta: pergunta,
-            resposta: resposta
-        })
-    })
-    .then(response => {
-        // VERIFICA SE A RESPOSTA DA REQUISIÇÃO FOI BEM-SUCEDIDA
-        if (!response.ok) {
-            // SE NÃO FOI BEM-SUCEDIDA, LANÇA UM ERRO
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        // RETORNA A RESPOSTA COMO JSON
-        return response.json();
-    })
-    .then(data => {
-        // PROCESSA OS DADOS RECEBIDOS DO SERVIDOR
-        if (data.success) {
-            // MOSTRA UMA MENSAGEM DE SUCESSO
-            mostrarSucesso(data.message || "Pergunta e resposta criadas com sucesso!");
-            
-            // FECHA O MODAL
-            const modal = bootstrap.Modal.getInstance(document.getElementById("criarPerguntaModal"));
-            modal.hide();
-            
-            // RECARREGA OS FLASHCARDS PARA ATUALIZAR AS PERGUNTAS NA INTERFACE
-            carregarFlashcards(topicoSelecionado);
-        } else {
-            // MOSTRA UMA MENSAGEM DE ERRO
-            mostrarErro(data.message || "Erro ao criar pergunta e resposta");
-        }
-    })
-    .catch(error => {
-        // TRATA ERROS DE REDE OU OUTROS ERROS DURANTE A REQUISIÇÃO
-        console.error("Erro ao criar pergunta e resposta:", error);
-        // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
-        mostrarErro("Erro ao criar pergunta e resposta: " + error.message);
-    });
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-
-// REVER (DEVE-SE ALTERAR SOMENTE O NOME E DESCRIÇÃO)
-// ===== FUNÇÃO PARA EDITAR FLASHCARD =====
-function editarFlashcard(flashcardId) {
-    // BUSCAR OS DADOS ATUAIS DO FLASHCARD PARA PREENCHER O FORMULÁRIO DE EDIÇÃO
-    fetch(`./api/independente/flashcards/${flashcardId}`, { // FAZ UMA REQUISIÇÃO GET PARA OBTER OS DETALHES DO FLASHCARD
-        method: "GET", // MÉTODO HTTP GET
-        headers: { // CABEÇALHOS DA REQUISIÇÃO
-            "Content-Type": "application/json", // TIPO DE CONTEÚDO JSON
-            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "", // TOKEN CSRF
-            "Accept": "application/json" // ACEITA RESPOSTAS JSON
-        }
-    })
-        .then(response => {
-            // VERIFICAR SE A RESPOSTA FOI BEM-SUCEDIDA
-            if (!response.ok) {
-                // SE NÃO FOI BEM-SUCEDIDA, LANÇA UM ERRO
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            // RETORNA A RESPOSTA COMO JSON
-            return response.json();
-        })
-        .then(data => {
-            // PROCESSAR RESPOSTA DO SERVIDOR
-            if (data.success) {
-                // SE A OPERAÇÃO FOI BEM-SUCEDIDA, ABRE O MODAL DE EDIÇÃO COM OS DADOS DO FLASHCARD
-                abrirModalEdicaoFlashcard(data.flashcard);
-            } else {
-                // SE HOUVE ERRO, MOSTRA UMA MENSAGEM DE ERRO
-                mostrarErro(data.message || "Erro ao buscar flashcard para edição");
-            }
-        })
-        .catch(error => {
-            // TRATAR ERROS DE REDE OU OUTROS ERROS
-            console.error("Erro ao buscar flashcard para edição:", error);
-            // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
-            mostrarErro("Erro ao buscar flashcard para edição: " + error.message);
-        });
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-//REVER (ACHO QUE DA PRA SAIR)
-// ===== FUNÇÃO PARA ABRIR MODAL DE EDIÇÃO DE FLASHCARD =====
+// FUNCIONANDO 
+// FUNÇÃO PARA ABRIR MODAL DE EDIÇÃO DE FLASHCARD (APENAS NOME E DESCRIÇÃO)
 function abrirModalEdicaoFlashcard(flashcard) {
     // CRIA O HTML DO MODAL DINAMICAMENTE PARA EDIÇÃO
     const modalHtml = `
         <div class="modal fade" id="editFlashcardModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Editar Flashcard</h5>
@@ -484,29 +383,6 @@ function abrirModalEdicaoFlashcard(flashcard) {
                             <div class="mb-3">
                                 <label for="editDescricao" class="form-label">Descrição</label>
                                 <textarea class="form-control" id="editDescricao" rows="3">${flashcard.descricao || ""}</textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Perguntas e Respostas</label>
-                                <div id="perguntasContainer">
-                                    ${flashcard.perguntas.map((pergunta, index) => `
-                                        <div class="pergunta-item mb-3 border p-3 rounded" data-id="${pergunta.id_pergunta_flashcard}">
-                                            <div class="mb-2">
-                                                <label class="form-label">Pergunta ${index + 1}</label>
-                                                <input type="text" class="form-control pergunta-input" value="${pergunta.pergunta}" required>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label class="form-label">Resposta ${index + 1}</label>
-                                                <textarea class="form-control resposta-input" rows="2" required>${pergunta.resposta}</textarea>
-                                            </div>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="removerPerguntaItem(this)">
-                                                <i class="fas fa-trash"></i> Remover
-                                            </button>
-                                        </div>
-                                    `).join("")}
-                                </div>
-                                <button type="button" class="btn btn-secondary btn-sm" onclick="adicionarNovaPergunta()">
-                                    <i class="fas fa-plus"></i> Adicionar Pergunta
-                                </button>
                             </div>
                         </form>
                     </div>
@@ -531,69 +407,14 @@ function abrirModalEdicaoFlashcard(flashcard) {
     const modal = new bootstrap.Modal(document.getElementById("editFlashcardModal"));
     modal.show();
 }
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
 
-//FUNCIONANDO
-// ===== FUNÇÃO PARA ADICIONAR NOVA PERGUNTA NO MODAL DE EDIÇÃO =====
-function adicionarNovaPergunta() {
-    // SELECIONA O CONTÊINER ONDE AS PERGUNTAS SERÃO ADICIONADAS
-    const container = document.getElementById("perguntasContainer");
-    // CALCULA O NÚMERO DA PRÓXIMA PERGUNTA
-    const perguntaCount = container.children.length + 1;
-    
-    // CRIA O HTML PARA UMA NOVA PERGUNTA E RESPOSTA
-    const novaPerguntaHtml = `
-        <div class="pergunta-item mb-3 border p-3 rounded" data-id="">
-            <div class="mb-2">
-                <label class="form-label">Pergunta ${perguntaCount}</label>
-                <input type="text" class="form-control pergunta-input" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Resposta ${perguntaCount}</label>
-                <textarea class="form-control resposta-input" rows="2" required></textarea>
-            </div>
-            <button type="button" class="btn btn-danger btn-sm" onclick="removerPerguntaItem(this)">
-                <i class="fas fa-trash"></i> Remover
-            </button>
-        </div>
-    `;
-    
-    // INSERE O NOVO HTML NO FINAL DO CONTÊINER DE PERGUNTAS
-    container.insertAdjacentHTML("beforeend", novaPerguntaHtml);
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-
-//FUNCIONANDO
-// ===== FUNÇÃO PARA REMOVER PERGUNTA DO MODAL DE EDIÇÃO =====
-function removerPerguntaItem(button) {
-    // ENCONTRA O ELEMENTO PAI MAIS PRÓXIMO COM A CLASSE 'pergunta-item' E O REMOVE
-    button.closest(".pergunta-item").remove();
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-// REVER
-// ===== FUNÇÃO PARA SALVAR EDIÇÃO DO FLASHCARD =====
+// FUNCIONANDO 
+// FUNÇÃO PARA SALVAR EDIÇÃO DO FLASHCARD (APENAS NOME E DESCRIÇÃO)
 function salvarEdicaoFlashcard(flashcardId) {
     // COLETAR O VALOR DO CAMPO DE TÍTULO
     const titulo = document.getElementById("editTitulo").value;
     // COLETAR O VALOR DO CAMPO DE DESCRIÇÃO
     const descricao = document.getElementById("editDescricao").value;
-    
-    // COLETAR TODAS AS PERGUNTAS E RESPOSTAS DO FORMULÁRIO
-    const perguntasItems = document.querySelectorAll(".pergunta-item");
-    // MAPEIA OS ELEMENTOS PARA UM ARRAY DE OBJETOS COM PERGUNTA E RESPOSTA
-    const perguntas = Array.from(perguntasItems).map(item => ({
-        id_pergunta_flashcard: item.dataset.id || null, // OBTÉM O ID DA PERGUNTA OU NULL SE FOR NOVA
-        pergunta: item.querySelector(".pergunta-input").value, // OBTÉM O VALOR DA PERGUNTA
-        resposta: item.querySelector(".resposta-input").value // OBTÉM O VALOR DA RESPOSTA
-    }));
 
     // VALIDAÇÃO BÁSICA: VERIFICA SE O TÍTULO NÃO ESTÁ VAZIO
     if (!titulo.trim()) {
@@ -612,8 +433,7 @@ function salvarEdicaoFlashcard(flashcardId) {
         },
         body: JSON.stringify({ // CORPO DA REQUISIÇÃO EM FORMATO JSON
             titulo: titulo,
-            descricao: descricao,
-            perguntas: perguntas // ENVIA O ARRAY DE PERGUNTAS E RESPOSTAS
+            descricao: descricao
         })
     })
     .then(response => {
@@ -653,8 +473,8 @@ function salvarEdicaoFlashcard(flashcardId) {
 // ***************************************************************************************************************
 // ***************************************************************************************************************
 
-// NADA FUNCIONANDO
-// ===== FUNÇÃO PARA GERENCIAR PERGUNTAS DO FLASHCARD =====
+// FUNCIONANDO --> VAI PRA ABERTURA DO MODAL
+// FUNÇÃO PARA GERENCIAR PERGUNTAS DO FLASHCARD
 function gerenciarPerguntas(flashcardId) {
     // BUSCAR OS DADOS ATUAIS DO FLASHCARD PARA PREENCHER O MODAL DE GERENCIAMENTO
     fetch(`./api/independente/flashcards/${flashcardId}`, {
@@ -687,9 +507,13 @@ function gerenciarPerguntas(flashcardId) {
 // ***************************************************************************************************************
 // ***************************************************************************************************************
 
-// NADA FUNCIONANDO
-// ===== FUNÇÃO PARA ABRIR MODAL DE GERENCIAMENTO DE PERGUNTAS =====
+
+// FUNCIONANDO --> O MODAL ABRE CORRETAMENTE
+// FUNÇÃO PARA ABRIR MODAL DE GERENCIAMENTO DE PERGUNTAS
 function abrirModalGerenciarPerguntas(flashcard) {
+    // GARANTE QUE O ARRAY DE PERGUNTAS EXISTE, MESMO QUE VAZIO
+    const perguntas = flashcard.perguntas || [];
+    
     // CRIA O HTML DO MODAL DINAMICAMENTE PARA GERENCIAMENTO DE PERGUNTAS
     const modalHtml = `
         <div class="modal fade" id="gerenciarPerguntasModal" tabindex="-1">
@@ -701,21 +525,18 @@ function abrirModalGerenciarPerguntas(flashcard) {
                     </div>
                     <div class="modal-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6>Perguntas e Respostas (${flashcard.perguntas.length})</h6>
-                            <button type="button" class="btn btn-success btn-sm" onclick="adicionarNovaPerguntaGerenciar(${flashcard.id_flashcard})">
+                            <h6>Perguntas e Respostas (${perguntas.length})</h6>
+                            <button type="button" class="btn btn-success btn-sm" onclick="adicionarPerguntaDoGerenciador(${flashcard.id_flashcard})">
                                 <i class="fas fa-plus"></i> Nova Pergunta
                             </button>
                         </div>
                         <div id="perguntasGerenciarContainer">
-                            ${flashcard.perguntas.length > 0 ? flashcard.perguntas.map((pergunta, index) => `
+                            ${perguntas.length > 0 ? perguntas.map((pergunta, index) => `
                                 <div class="pergunta-gerenciar-item mb-4 border p-3 rounded" data-id="${pergunta.id_pergunta_flashcard}">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h6 class="mb-0">Pergunta ${index + 1}</h6>
                                         <div>
-                                            <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="editarPerguntaItem(${pergunta.id_pergunta_flashcard})">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="excluirPerguntaItem(${pergunta.id_pergunta_flashcard})">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="excluirPergunta(${pergunta.id_pergunta_flashcard})">
                                                 <i class="fas fa-trash"></i> Excluir
                                             </button>
                                         </div>
@@ -735,7 +556,7 @@ function abrirModalGerenciarPerguntas(flashcard) {
                                 <div class="text-center py-4">
                                     <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
                                     <p class="text-muted">Nenhuma pergunta criada ainda</p>
-                                    <button type="button" class="btn btn-primary" onclick="adicionarNovaPerguntaGerenciar(${flashcard.id_flashcard})">
+                                    <button type="button" class="btn btn-primary" onclick="adicionarPerguntaDoGerenciador(${flashcard.id_flashcard})">
                                         Criar primeira pergunta
                                     </button>
                                 </div>
@@ -767,45 +588,213 @@ function abrirModalGerenciarPerguntas(flashcard) {
 // ***************************************************************************************************************
 
 
-// ===== FUNÇÃO PARA ADICIONAR NOVA PERGUNTA NO GERENCIAMENTO =====
-function adicionarNovaPerguntaGerenciar(flashcardId) {
-    // FECHA O MODAL DE GERENCIAMENTO TEMPORARIAMENTE
-    const gerenciarModal = bootstrap.Modal.getInstance(document.getElementById("gerenciarPerguntasModal"));
-    gerenciarModal.hide();
-    
-    // ABRE O MODAL DE CRIAÇÃO DE PERGUNTA
-    criarPerguntaResposta(flashcardId);
-    
-    // QUANDO O MODAL DE CRIAÇÃO FECHAR, REABRE O DE GERENCIAMENTO
-    document.getElementById("criarPerguntaModal").addEventListener("hidden.bs.modal", function() {
-        // RECARREGA O MODAL DE GERENCIAMENTO COM DADOS ATUALIZADOS
-        gerenciarPerguntas(flashcardId);
-    }, { once: true });
+// O GERENCIADO ABRE NORMALMENTE
+// FUNÇÕES DE ADICIOANR PERGUNTA E REMOVER PERGUNTA NÃO FUNCIONAM
+// DAQUI PRA BAIXO, ACHO QUE TEM MUITAS FUNÇÕES REDUNDANTES
+
+// FUNÇÃO UNIFICADA PARA ADICIONAR PERGUNTA (substitui várias funções redundantes)
+function abrirModalAdicionarPergunta(flashcardId) {
+    const modalHtml = `
+        <div class="modal fade" id="adicionarPerguntaModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Adicionar Pergunta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="perguntaForm">
+                            <input type="hidden" id="flashcardId" value="${flashcardId}">
+                            <div class="mb-3">
+                                <label for="perguntaTexto" class="form-label">Pergunta</label>
+                                <textarea class="form-control" id="perguntaTexto" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="respostaTexto" class="form-label">Resposta</label>
+                                <textarea class="form-control" id="respostaTexto" rows="3" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="salvarPergunta()">Salvar Pergunta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove modal existente se houver
+    const existingModal = document.getElementById("adicionarPerguntaModal");
+    if (existingModal) existingModal.remove();
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById("adicionarPerguntaModal"));
+    modal.show();
 }
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
 
+// FUNÇÃO PARA SALVAR PERGUNTA (unificada)
+function salvarPergunta() {
+    const flashcardId = document.getElementById("flashcardId").value;
+    const pergunta = document.getElementById("perguntaTexto").value.trim();
+    const resposta = document.getElementById("respostaTexto").value.trim();
 
-
-// ===== FUNÇÃO PARA EDITAR PERGUNTA INDIVIDUAL =====
-function editarPerguntaItem(perguntaId) {
-    // IMPLEMENTAR EDIÇÃO INDIVIDUAL DE PERGUNTA
-    mostrarInfo("Funcionalidade de edição individual em desenvolvimento");
-}
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-// ***************************************************************************************************************
-
-
-
-// ===== FUNÇÃO PARA EXCLUIR PERGUNTA INDIVIDUAL =====
-function excluirPerguntaItem(perguntaId) {
-    // CONFIRMAR AÇÃO DE EXCLUSÃO
-    if (!confirm("Tem certeza que deseja excluir esta pergunta?")) {
+    if (!pergunta || !resposta) {
+        mostrarErro("Preencha tanto a pergunta quanto a resposta");
         return;
     }
+
+    fetch(`./api/independente/perguntas`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            id_flashcard: flashcardId,
+            pergunta: pergunta,
+            resposta: resposta
+        })
+    })
+    .then(handleResponse)
+    .then(data => {
+        if (data.success) {
+            mostrarSucesso("Pergunta adicionada com sucesso!");
+            const modal = bootstrap.Modal.getInstance(document.getElementById("adicionarPerguntaModal"));
+            modal.hide();
+            
+            // Atualiza a view de flashcards
+            carregarFlashcards(topicoSelecionado);
+            
+            // Se o modal de gerenciamento estiver aberto, recarrega ele também
+            if (document.getElementById("gerenciarPerguntasModal")) {
+                gerenciarPerguntas(flashcardId);
+            }
+        }
+    })
+    .catch(handleError);
+}
+
+// FUNÇÃO MELHORADA PARA GERENCIAR PERGUNTAS
+function gerenciarPerguntas(flashcardId) {
+    fetch(`./api/independente/flashcards/${flashcardId}`, {
+        method: "GET",
+        headers: getDefaultHeaders()
+    })
+    .then(handleResponse)
+    .then(data => {
+        if (data.success) {
+            renderizarModalGerenciamento(data.flashcard);
+        }
+    })
+    .catch(handleError);
+}
+
+function renderizarModalGerenciamento(flashcard) {
+    const perguntas = flashcard.perguntas || [];
     
-    // IMPLEMENTAR EXCLUSÃO INDIVIDUAL DE PERGUNTA
-    mostrarInfo("Funcionalidade de exclusão individual em desenvolvimento");
+    const modalHtml = `
+        <div class="modal fade" id="gerenciarPerguntasModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Perguntas: ${flashcard.titulo}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total: ${perguntas.length} perguntas</span>
+                            <button class="btn btn-sm btn-primary" onclick="abrirModalAdicionarPergunta(${flashcard.id_flashcard})">
+                                <i class="fas fa-plus"></i> Nova Pergunta
+                            </button>
+                        </div>
+                        <div id="listaPerguntas">
+                            ${perguntas.length > 0 ? perguntas.map((pergunta, index) => `
+                                <div class="card mb-2" data-id="${pergunta.id_pergunta}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Pergunta ${index + 1}</h6>
+                                                <p class="card-text"><strong>P:</strong> ${pergunta.pergunta}</p>
+                                                <p class="card-text"><strong>R:</strong> ${pergunta.resposta}</p>
+                                            </div>
+                                            <button class="btn btn-sm btn-danger" onclick="confirmarExclusaoPergunta(${pergunta.id_pergunta}, ${flashcard.id_flashcard})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="text-center text-muted">Nenhuma pergunta cadastrada</p>'}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove modal existente
+    const existingModal = document.getElementById("gerenciarPerguntasModal");
+    if (existingModal) existingModal.remove();
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById("gerenciarPerguntasModal"));
+    modal.show();
+}
+
+// FUNÇÃO PARA CONFIRMAR EXCLUSÃO DE PERGUNTA
+function confirmarExclusaoPergunta(perguntaId, flashcardId) {
+    if (confirm("Tem certeza que deseja excluir esta pergunta?")) {
+        excluirPergunta(perguntaId, flashcardId);
+    }
+}
+
+// FUNÇÃO MELHORADA PARA EXCLUIR PERGUNTA
+function excluirPergunta(perguntaId, flashcardId) {
+    fetch(`./api/independente/perguntas/${perguntaId}`, {
+        method: "DELETE",
+        headers: getDefaultHeaders()
+    })
+    .then(handleResponse)
+    .then(data => {
+        if (data.success) {
+            mostrarSucesso("Pergunta excluída com sucesso!");
+            
+            // Remove o item da lista
+            const item = document.querySelector(`[data-id="${perguntaId}"]`);
+            if (item) item.remove();
+            
+            // Atualiza contador
+            const total = document.querySelectorAll("#listaPerguntas .card").length;
+            document.querySelector("#gerenciarPerguntasModal .modal-body span").textContent = `Total: ${total} perguntas`;
+            
+            // Se não houver mais perguntas, mostra mensagem
+            if (total === 0) {
+                document.getElementById("listaPerguntas").innerHTML = '<p class="text-center text-muted">Nenhuma pergunta cadastrada</p>';
+            }
+        }
+    })
+    .catch(handleError);
+}
+
+// FUNÇÕES AUXILIARES
+function getDefaultHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "",
+        "Accept": "application/json"
+    };
+}
+
+function handleResponse(response) {
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+}
+
+function handleError(error) {
+    console.error("Erro:", error);
+    mostrarErro(error.message || "Ocorreu um erro");
 }
