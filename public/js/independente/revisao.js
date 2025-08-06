@@ -227,7 +227,6 @@ function proximaPergunta() {
 function atualizarProgressoRevisao() {
     // CALCULA A PORCENTAGEM DE PROGRESSO
     const progresso = ((perguntaAtualIndex + 1) / perguntasRevisao.length) * 100;
-    
     // ATUALIZA A BARRA DE PROGRESSO
     document.getElementById("progressoRevisao").style.width = progresso + "%";
     // ATUALIZA O NÚMERO DA PERGUNTA ATUAL
