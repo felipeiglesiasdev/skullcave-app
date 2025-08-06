@@ -1,4 +1,8 @@
 // ===== FUNÇÕES DE DISCIPLINAS =====
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA SELECIONAR UMA DISCIPLINA
 function selecionarDisciplina(disciplinaId) {
@@ -24,6 +28,10 @@ function selecionarDisciplina(disciplinaId) {
     // CARREGA OS TÓPICOS DA DISCIPLINA SELECIONADA
     carregarTopicos(disciplinaId);
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // FUNÇÃO PARA CARREGAR AS DISCIPLINAS DO SERVIDOR
 function carregarDisciplinas() {
@@ -63,6 +71,10 @@ function carregarDisciplinas() {
     });
 }
 
+
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 // FUNÇÃO PARA RENDERIZAR (EXIBIR) AS DISCIPLINAS NA INTERFACE
 function renderizarDisciplinas(disciplinas) {
     // SELECIONA O CONTÊINER ONDE AS DISCIPLINAS SERÃO EXIBIDAS
@@ -115,15 +127,12 @@ function renderizarDisciplinas(disciplinas) {
     document.querySelectorAll(".disciplina-card, .topico-card").forEach(card => {
         card.classList.remove("active");
     });
-
-    /*
-    // SE HOUVER DISCIPLINAS, SELECIONA A PRIMEIRA AUTOMATICAMENTE
-    if (disciplinas.length > 0) {
-        selecionarDisciplina(disciplinas[0].id_disciplina);
-    }
-        */
 }
 
+
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE DISCIPLINA
 // ADICIONADO PARÂMETROS OPCIONAIS PARA EDIÇÃO
 function abrirModalDisciplina(disciplinaId = null, nome = null, descricao = null)
@@ -174,6 +183,10 @@ function abrirModalDisciplina(disciplinaId = null, nome = null, descricao = null
     modal.show();
 }
 
+
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 // FUNÇÃO PARA CRIAR UMA NOVA DISCIPLINA
 function criarDisciplina() {
     // SELECIONA O FORMULÁRIO DE DISCIPLINA
@@ -184,23 +197,19 @@ function criarDisciplina() {
         mostrarErro("Formulário não encontrado");
         return; // ENCERRA A FUNÇÃO
     }
-    
     // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
     const formData = new FormData(form);
-    
     // EXTRAI OS DADOS DO FORMULÁRIO PARA UM OBJETO JAVASCRIPT
     const data = {
         nome: formData.get("nome"), // OBTÉM O VALOR DO CAMPO 'nome'
         descricao: formData.get("descricao") || "" // OBTÉM O VALOR DO CAMPO 'descricao' OU UMA STRING VAZIA
     };
-    
     // VALIDAÇÃO BÁSICA DO NOME DA DISCIPLINA
     if (!data.nome || data.nome.trim().length < 3) {
         // MOSTRA UM ERRO SE O NOME FOR INVÁLIDO
         mostrarErro("Nome da disciplina deve ter pelo menos 3 caracteres");
         return; // ENCERRA A FUNÇÃO
     }
-    
     // FAZ UMA REQUISIÇÃO FETCH PARA A API DE CRIAÇÃO DE DISCIPLINAS
     fetch(`./api/independente/disciplinas`, {
         method: "POST", // MÉTODO HTTP POST
@@ -252,6 +261,10 @@ function criarDisciplina() {
         mostrarErro("Erro ao criar disciplina: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // ===== FUNÇÃO PARA EXCLUIR DISCIPLINA =====
 function removerDisciplina(disciplinaId) {
@@ -297,6 +310,10 @@ function removerDisciplina(disciplinaId) {
         mostrarErro("Erro ao excluir disciplina: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 
 // FUNÇÃO PARA EDITAR UMA DISCIPLINA EXISTENTE
@@ -375,3 +392,7 @@ function editarDisciplina(disciplinaId) {
         mostrarErro("Erro ao atualizar disciplina: " + error.message);
     });
 }
+
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************

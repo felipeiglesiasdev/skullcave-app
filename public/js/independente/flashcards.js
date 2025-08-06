@@ -1,14 +1,11 @@
 // ===== FUNÇÕES DE FLASHCARDS =====
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+//FUNCIONANDO
 // FUNÇÃO PARA CARREGAR OS FLASHCARDS DE UM TÓPICO ESPECÍFICO
 function carregarFlashcards(topicoId) {
-    // VERIFICA SE O ID DO TÓPICO FOI FORNECIDO
-    if (!topicoId) {
-        // REGISTRA UM ERRO NO CONSOLE
-        console.error("ID do tópico não fornecido");
-        return; // ENCERRA A FUNÇÃO
-    }
-    
     // FAZ UMA REQUISIÇÃO FETCH PARA A API DE FLASHCARDS DO TÓPICO
     fetch(`./api/independente/topicos/${topicoId}/flashcards`, {
         method: "GET", // MÉTODO HTTP GET
@@ -44,18 +41,16 @@ function carregarFlashcards(topicoId) {
         mostrarErro("Erro ao carregar flashcards: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
-// FUNÇÃO PARA RENDERIZAR (EXIBIR) OS FLASHCARDS NA INTERFACE
+
+//FUNCIONANDO
+// FUNÇÃO PARA RENDERIZAR OS FLASHCARDS NA INTERFACE
 function renderizarFlashcards(flashcards) {
     // SELECIONA O CONTÊINER ONDE OS FLASHCARDS SERÃO EXIBIDOS
     const container = document.getElementById("flashcardsList");
-    // VERIFICA SE O CONTÊINER FOI ENCONTRADO
-    if (!container) {
-        // REGISTRA UM ERRO NO CONSOLE SE O CONTÊINER NÃO FOR ENCONTRADO
-        console.error("Container flashcardsList não encontrado");
-        return; // ENCERRA A FUNÇÃO
-    }
-    
     // VERIFICA SE NÃO HÁ FLASHCARDS OU SE A LISTA ESTÁ VAZIA
     if (!flashcards || flashcards.length === 0) {
         // DEFINE O CONTEÚDO HTML PARA EXIBIR UM ESTADO VAZIO (NENHUM FLASHCARD CRIADO)
@@ -126,7 +121,11 @@ function renderizarFlashcards(flashcards) {
     `).join(""); // UNE OS ELEMENTOS DO ARRAY EM UMA ÚNICA STRING HTML
     atualizarBotoesAcao(false, true);
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+//FUNCIONANDO
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO DE FLASHCARD
 function abrirModalFlashcard() {
     // VERIFICA SE UM TÓPICO ESTÁ SELECIONADO
@@ -164,18 +163,15 @@ function abrirModalFlashcard() {
         console.error("Modal flashcardModal não encontrado");
     }
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+//FUNCIONANDO
 // FUNÇÃO PARA CRIAR UM NOVO FLASHCARD
 function criarFlashcard() {
     // SELECIONA O FORMULÁRIO DE FLASHCARD
     const form = document.getElementById("flashcardForm");
-    // VERIFICA SE O FORMULÁRIO FOI ENCONTRADO
-    if (!form) {
-        // MOSTRA UM ERRO SE O FORMULÁRIO NÃO FOR ENCONTRADO
-        mostrarErro("Formulário não encontrado");
-        return; // ENCERRA A FUNÇÃO
-    }
-    
     // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
     const formData = new FormData(form);
     
@@ -251,7 +247,12 @@ function criarFlashcard() {
         mostrarErro("Erro ao criar flashcard: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+
+//FUNCIONANDO
 // ===== FUNÇÃO PARA EXCLUIR FLASHCARD =====
 function removerFlashcard(flashcardId) {
     // CONFIRMAR AÇÃO DE EXCLUSÃO COM O USUÁRIO
@@ -296,7 +297,12 @@ function removerFlashcard(flashcardId) {
         mostrarErro("Erro ao excluir flashcard: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+
+//FUNCIONANDO
 // ===== FUNÇÃO PARA CRIAR PERGUNTA E RESPOSTA EM UM FLASHCARD =====
 function criarPerguntaResposta(flashcardId) {
     // CRIA O HTML DO MODAL DINAMICAMENTE PARA CRIAÇÃO DE PERGUNTA
@@ -341,7 +347,12 @@ function criarPerguntaResposta(flashcardId) {
     const modal = new bootstrap.Modal(document.getElementById("criarPerguntaModal"));
     modal.show();
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+
+//FUNCIONANDO
 // ===== FUNÇÃO PARA SALVAR NOVA PERGUNTA =====
 function salvarNovaPergunta(flashcardId) {
     // OBTÉM OS VALORES DOS CAMPOS DO FORMULÁRIO
@@ -405,7 +416,12 @@ function salvarNovaPergunta(flashcardId) {
         mostrarErro("Erro ao criar pergunta e resposta: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+
+// REVER (DEVE-SE ALTERAR SOMENTE O NOME E DESCRIÇÃO)
 // ===== FUNÇÃO PARA EDITAR FLASHCARD =====
 function editarFlashcard(flashcardId) {
     // BUSCAR OS DADOS ATUAIS DO FLASHCARD PARA PREENCHER O FORMULÁRIO DE EDIÇÃO
@@ -443,7 +459,11 @@ function editarFlashcard(flashcardId) {
             mostrarErro("Erro ao buscar flashcard para edição: " + error.message);
         });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+//REVER (ACHO QUE DA PRA SAIR)
 // ===== FUNÇÃO PARA ABRIR MODAL DE EDIÇÃO DE FLASHCARD =====
 function abrirModalEdicaoFlashcard(flashcard) {
     // CRIA O HTML DO MODAL DINAMICAMENTE PARA EDIÇÃO
@@ -511,7 +531,11 @@ function abrirModalEdicaoFlashcard(flashcard) {
     const modal = new bootstrap.Modal(document.getElementById("editFlashcardModal"));
     modal.show();
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+//FUNCIONANDO
 // ===== FUNÇÃO PARA ADICIONAR NOVA PERGUNTA NO MODAL DE EDIÇÃO =====
 function adicionarNovaPergunta() {
     // SELECIONA O CONTÊINER ONDE AS PERGUNTAS SERÃO ADICIONADAS
@@ -539,13 +563,22 @@ function adicionarNovaPergunta() {
     // INSERE O NOVO HTML NO FINAL DO CONTÊINER DE PERGUNTAS
     container.insertAdjacentHTML("beforeend", novaPerguntaHtml);
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+
+//FUNCIONANDO
 // ===== FUNÇÃO PARA REMOVER PERGUNTA DO MODAL DE EDIÇÃO =====
 function removerPerguntaItem(button) {
     // ENCONTRA O ELEMENTO PAI MAIS PRÓXIMO COM A CLASSE 'pergunta-item' E O REMOVE
     button.closest(".pergunta-item").remove();
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+// REVER
 // ===== FUNÇÃO PARA SALVAR EDIÇÃO DO FLASHCARD =====
 function salvarEdicaoFlashcard(flashcardId) {
     // COLETAR O VALOR DO CAMPO DE TÍTULO
@@ -616,9 +649,11 @@ function salvarEdicaoFlashcard(flashcardId) {
         mostrarErro("Erro ao atualizar flashcard: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
-
-
+// NADA FUNCIONANDO
 // ===== FUNÇÃO PARA GERENCIAR PERGUNTAS DO FLASHCARD =====
 function gerenciarPerguntas(flashcardId) {
     // BUSCAR OS DADOS ATUAIS DO FLASHCARD PARA PREENCHER O MODAL DE GERENCIAMENTO
@@ -648,7 +683,11 @@ function gerenciarPerguntas(flashcardId) {
         mostrarErro("Erro ao buscar flashcard: " + error.message);
     });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
 
+// NADA FUNCIONANDO
 // ===== FUNÇÃO PARA ABRIR MODAL DE GERENCIAMENTO DE PERGUNTAS =====
 function abrirModalGerenciarPerguntas(flashcard) {
     // CRIA O HTML DO MODAL DINAMICAMENTE PARA GERENCIAMENTO DE PERGUNTAS
@@ -723,6 +762,10 @@ function abrirModalGerenciarPerguntas(flashcard) {
     const modal = new bootstrap.Modal(document.getElementById("gerenciarPerguntasModal"));
     modal.show();
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
 
 // ===== FUNÇÃO PARA ADICIONAR NOVA PERGUNTA NO GERENCIAMENTO =====
 function adicionarNovaPerguntaGerenciar(flashcardId) {
@@ -739,12 +782,22 @@ function adicionarNovaPerguntaGerenciar(flashcardId) {
         gerenciarPerguntas(flashcardId);
     }, { once: true });
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
+
 
 // ===== FUNÇÃO PARA EDITAR PERGUNTA INDIVIDUAL =====
 function editarPerguntaItem(perguntaId) {
     // IMPLEMENTAR EDIÇÃO INDIVIDUAL DE PERGUNTA
     mostrarInfo("Funcionalidade de edição individual em desenvolvimento");
 }
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+// ***************************************************************************************************************
+
+
 
 // ===== FUNÇÃO PARA EXCLUIR PERGUNTA INDIVIDUAL =====
 function excluirPerguntaItem(perguntaId) {
