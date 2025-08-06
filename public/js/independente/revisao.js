@@ -1,12 +1,12 @@
 // ===== FUNÇÕES DE REVISÃO DE FLASHCARDS =====
 
 // VARIÁVEIS GLOBAIS PARA CONTROLE DA REVISÃO
-let flashcardAtualRevisao = null;       // FLASHCARD SENDO REVISADO ATUALMENTE
-let perguntasRevisao = [];              // ARRAY COM AS PERGUNTAS DO FLASHCARD
-let perguntaAtualIndex = 0;             // ÍNDICE DA PERGUNTA ATUAL
-let respostasCorretas = 0;              // CONTADOR DE RESPOSTAS CORRETAS
-let respostasIncorretas = 0;            // CONTADOR DE RESPOSTAS INCORRETAS
-let mostrandoResposta = false;          // FLAG PARA CONTROLAR SE A RESPOSTA ESTÁ SENDO MOSTRADA
+let flashcardAtualRevisao = null; // FLASHCARD SENDO REVISADO ATUALMENTE
+let perguntasRevisao = []; // ARRAY COM AS PERGUNTAS DO FLASHCARD
+let perguntaAtualIndex = 0; // ÍNDICE DA PERGUNTA ATUAL
+let respostasCorretas = 0; // CONTADOR DE RESPOSTAS CORRETAS
+let respostasIncorretas = 0; // CONTADOR DE RESPOSTAS INCORRETAS
+let mostrandoResposta = false; // FLAG PARA CONTROLAR SE A RESPOSTA ESTÁ SENDO MOSTRADA
 
 // FUNÇÃO PARA INICIAR A REVISÃO DE UM FLASHCARD
 function iniciarRevisao(flashcardId) {

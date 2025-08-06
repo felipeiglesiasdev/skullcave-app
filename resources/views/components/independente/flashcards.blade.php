@@ -22,13 +22,6 @@
                         <button class="btn-action" onclick="event.stopPropagation(); criarPerguntaResposta({{ $flashcard->id_flashcard }})" title="Adicionar Pergunta">
                             <i class="fas fa-plus"></i>
                         </button>
-                        <button class="btn-action" onclick="abrirModalAdicionarPergunta({{ $flashcard->id_flashcard }})" title="Adicionar Pergunta">
-                            <i class="fas fa-plus"></i>
-                        </button>
-
-                        <button class="btn-action" onclick="gerenciarPerguntas({{ $flashcard->id_flashcard }})" title="Gerenciar Perguntas">
-                            <i class="fas fa-cog"></i>
-                        </button>
                     </div>
                 </div>
                 @if($flashcard->descricao)

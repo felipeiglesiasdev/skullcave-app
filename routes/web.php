@@ -73,10 +73,8 @@ Route::middleware("auth")->group(function () {
         Route::put("/flashcards/{id}", [DashboardIndependenteController::class, "editarFlashcard"]); // FUNCIONANDO
         Route::delete("/flashcards/{id}", [DashboardIndependenteController::class, "excluirFlashcard"]); // FUNCIONANDO
         
-        
-         // PerguntaFlashcard Routes
-        Route::post("/perguntas", [DashboardIndependenteController::class, "criarPerguntaFlashcard"]);
-        Route::delete("/perguntas/{id}", [DashboardIndependenteController::class, "excluirPergunta"]);
+        // Perguntas
+        Route::post("/perguntas", [DashboardIndependenteController::class, "criarPerguntaFlashcard"]); // FUNCIONANDO
         
         // Estatísticas
         Route::get("/estatisticas", [DashboardIndependenteController::class, "getEstatisticas"]); // FUNCIONANDO
