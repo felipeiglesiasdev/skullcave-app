@@ -56,12 +56,16 @@ Route::middleware("auth")->group(function () {
         Route::post("/disciplinas", [DashboardIndependenteController::class, "criarDisciplina"]); //FUNCIONANDO
         Route::get("/disciplinas/{id}", [DashboardIndependenteController::class, "getDisciplina"]); //FUNCIONANDO
         Route::delete("/disciplinas/{id}", [DashboardIndependenteController::class, "excluirDisciplina"]); // FUNCIONANDO
+        Route::put("/disciplinas/{id}", [DashboardIndependenteController::class, "atualizarDisciplina"]); // FUNCIONANDO
+
         
         // Tópicos
         Route::get("/disciplinas/{disciplinaId}/topicos", [DashboardIndependenteController::class, "getTopicos"]); // FUNCIONANDO
         Route::post("/topicos", [DashboardIndependenteController::class, "criarTopico"]); // FUNCIONANDO
         Route::get("/topicos/{id}", [DashboardIndependenteController::class, "getTopico"]); // FUNCIONANDO
         Route::delete("/topicos/{id}", [DashboardIndependenteController::class, "excluirTopico"]); // FUNCIONANDO
+        Route::put("/topicos/{id}", [DashboardIndependenteController::class, "atualizarTopico"]);
+
         
         // Flashcards
         Route::get("/topicos/{topicoId}/flashcards", [DashboardIndependenteController::class, "getFlashcards"]);

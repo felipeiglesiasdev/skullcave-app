@@ -84,6 +84,9 @@ function renderizarTopicos(topicos) {
                 <span class="flashcards-count">${topico.flashcards ? topico.flashcards.length : 0} flashcards</span>
             </div>
             <div class="topico-actions">
+                <button class="btn-action btn-edit-topico" onclick="event.stopPropagation(); editarTopico(${topico.id_topico}, '${topico.nome}', '${topico.descricao || ''}')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerTopico(${topico.id_topico})" title="Excluir">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -125,8 +128,8 @@ function selecionarTopico(topicoId) {
     carregarFlashcards(topicoId);
 }
 
-// FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO DE TÓPICO
-function abrirModalTopico() {
+// FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE TÓPICO
+function abrirModalTopico(topicoId = null, nome = '', descricao = '') {
     // VERIFICA SE UMA DISCIPLINA ESTÁ SELECIONADA
     if (!disciplinaSelecionada) {
         // MOSTRA UM ERRO SE NENHUMA DISCIPLINA ESTIVER SELECIONADA
@@ -136,31 +139,52 @@ function abrirModalTopico() {
     
     // SELECIONA O ELEMENTO DO MODAL
     const modalElement = document.getElementById("topicoModal");
-    // VERIFICA SE O MODAL FOI ENCONTRADO
-    if (modalElement) {
-        // SELECIONA O FORMULÁRIO DENTRO DO MODAL
-        const form = document.getElementById("topicoForm");
-        // VERIFICA SE O FORMULÁRIO EXISTE
-        if (form) {
-            // LIMPA OS CAMPOS DO FORMULÁRIO
-            form.reset();
-        }
-        
-        // SELECIONA O CAMPO OCULTO PARA O ID DA DISCIPLINA
-        const disciplinaIdInput = document.getElementById("disciplina_id");
-        // VERIFICA SE O CAMPO EXISTE
-        if (disciplinaIdInput) {
-            // DEFINE O VALOR DO CAMPO COM O ID DA DISCIPLINA SELECIONADA
-            disciplinaIdInput.value = disciplinaSelecionada;
-        }
-        
-        // CRIA UMA NOVA INSTÂNCIA DO MODAL DO BOOTSTRAP 5 E O MOSTRA
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-    } else {
-        // REGISTRA UM ERRO NO CONSOLE SE O MODAL NÃO FOR ENCONTRADO
-        console.error("Modal topicoModal não encontrado");
+    // SELECIONA O TÍTULO DO MODAL
+    const modalTitle = modalElement ? modalElement.querySelector(".modal-title") : null;
+    // SELECIONA O BOTÃO DE SUBMISSÃO DO MODAL
+    const submitButton = modalElement ? modalElement.querySelector("#topicoModal .btn-primary") : null;
+    // SELECIONA O FORMULÁRIO DENTRO DO MODAL
+    const form = document.getElementById("topicoForm");
+    // SELECIONA OS CAMPOS DO FORMULÁRIO
+    const nomeInput = document.getElementById("topicoNome"); // ASSUMINDO ID topicoNome PARA O CAMPO NOME DO TÓPICO
+    const descricaoInput = document.getElementById("topicoDescricao"); // ASSUMENDO ID topicoDescricao PARA O CAMPO DESCRIÇÃO DO TÓPICO
+    const disciplinaIdInput = document.getElementById("disciplina_id");
+
+    // VERIFICA SE OS ELEMENTOS NECESSÁRIOS FORAM ENCONTRADOS
+    if (!modalElement || !modalTitle || !submitButton || !form || !nomeInput || !descricaoInput || !disciplinaIdInput) {
+        console.error("Um ou mais elementos do modal de tópico não foram encontrados.");
+        return;
     }
+
+    // LIMPA OS CAMPOS DO FORMULÁRIO
+    form.reset();
+
+    // VERIFICA SE É UMA EDIÇÃO (topicoId FOI FORNECIDO)
+    if (topicoId) {
+        // DEFINE O TÍTULO DO MODAL PARA EDIÇÃO
+        modalTitle.textContent = "Editar Tópico";
+        // DEFINE O TEXTO DO BOTÃO DE SUBMISSÃO PARA ATUALIZAR
+        submitButton.textContent = "Atualizar Tópico";
+        // DEFINE O ATRIBUTO onclick DO BOTÃO PARA CHAMAR A FUNÇÃO DE EDIÇÃO
+        submitButton.onclick = () => editarTopico(topicoId);
+        // PREENCHE OS CAMPOS DO FORMULÁRIO COM OS DADOS DO TÓPICO
+        nomeInput.value = nome;
+        descricaoInput.value = descricao;
+    } else {
+        // DEFINE O TÍTULO DO MODAL PARA CRIAÇÃO
+        modalTitle.textContent = "Novo Tópico";
+        // DEFINE O TEXTO DO BOTÃO DE SUBMISSÃO PARA CRIAR
+        submitButton.textContent = "Criar Tópico";
+        // DEFINE O ATRIBUTO onclick DO BOTÃO PARA CHAMAR A FUNÇÃO DE CRIAÇÃO
+        submitButton.onclick = criarTopico;
+    }
+    
+    // DEFINE O VALOR DO CAMPO OCULTO COM O ID DA DISCIPLINA SELECIONADA
+    disciplinaIdInput.value = disciplinaSelecionada;
+        
+    // CRIA UMA NOVA INSTÂNCIA DO MODAL DO BOOTSTRAP 5 E O MOSTRA
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
 }
 
 // FUNÇÃO PARA CRIAR UM NOVO TÓPICO
@@ -292,5 +316,82 @@ function removerTopico(topicoId) {
         console.error("Erro ao excluir tópico:", error);
         // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
         mostrarErro("Erro ao excluir tópico: " + error.message);
+    });
+}
+
+// FUNÇÃO PARA EDITAR UM TÓPICO EXISTENTE
+// RECEBE O ID DO TÓPICO A SER EDITADO
+function editarTopico(topicoId) {
+    // SELECIONA O FORMULÁRIO DE TÓPICO
+    const form = document.getElementById("topicoForm");
+    // VERIFICA SE O FORMULÁRIO FOI ENCONTRADO
+    if (!form) {
+        // MOSTRA UM ERRO SE O FORMULÁRIO NÃO FOR ENCONTRADO
+        mostrarErro("Formulário não encontrado");
+        return; // ENCERRA A FUNÇÃO
+    }
+    
+    // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
+    const formData = new FormData(form);
+    
+    // EXTRAI OS DADOS DO FORMULÁRIO PARA UM OBJETO JAVASCRIPT
+    const data = {
+        nome: formData.get("nome"), // OBTÉM O VALOR DO CAMPO 'nome'
+        descricao: formData.get("descricao") || "" // OBTÉM O VALOR DO CAMPO 'descricao' OU UMA STRING VAZIA
+    };
+    
+    // VALIDAÇÃO BÁSICA DO NOME DO TÓPICO
+    if (!data.nome || data.nome.trim().length < 3) {
+        // MOSTRA UM ERRO SE O NOME FOR INVÁLIDO
+        mostrarErro("Nome do tópico deve ter pelo menos 3 caracteres");
+        return; // ENCERRA A FUNÇÃO
+    }
+    
+    // FAZ UMA REQUISIÇÃO FETCH PARA A API DE EDIÇÃO DE TÓPICOS
+    fetch(`./api/independente/topicos/${topicoId}`, {
+        method: "PUT", // MÉTODO HTTP PUT PARA ATUALIZAÇÃO
+        headers: { // CABEÇALHOS DA REQUISIÇÃO
+            "Content-Type": "application/json", // TIPO DE CONTEÚDO JSON
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "", // TOKEN CSRF
+            "Accept": "application/json" // ACEITA RESPOSTAS JSON
+        },
+        body: JSON.stringify(data) // CORPO DA REQUISIÇÃO EM FORMATO JSON
+    })
+    .then(response => {
+        // VERIFICA SE A RESPOSTA DA REQUISIÇÃO FOI BEM-SUCEDIDA
+        if (!response.ok) {
+            // SE NÃO FOI BEM-SUCEDIDA, LANÇA UM ERRO
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // RETORNA A RESPOSTA COMO JSON
+        return response.json();
+    })
+    .then(data => {
+        // PROCESSA OS DADOS RECEBIDOS DO SERVIDOR
+        if (data.success) {
+            // MOSTRA UMA MENSAGEM DE SUCESSO
+            mostrarSucesso(data.message || "Tópico atualizado com sucesso!");
+            
+            // FECHA O MODAL APÓS A ATUALIZAÇÃO BEM-SUCEDIDA
+            const modalElement = document.getElementById("topicoModal");
+            if (modalElement) {
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+            
+            // RECARREGA A LISTA DE TÓPICOS PARA ATUALIZAR A INTERFACE
+            carregarTopicos(disciplinaSelecionada);
+        } else {
+            // MOSTRA UMA MENSAGEM DE ERRO
+            mostrarErro(data.message || "Erro ao atualizar tópico");
+        }
+    })
+    .catch(error => {
+        // TRATA ERROS DE REDE OU OUTROS ERROS DURANTE A REQUISIÇÃO
+        console.error("Erro ao atualizar tópico:", error);
+        // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
+        mostrarErro("Erro ao atualizar tópico: " + error.message);
     });
 }

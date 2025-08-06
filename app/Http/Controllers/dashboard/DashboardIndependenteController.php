@@ -591,6 +591,84 @@ class DashboardIndependenteController extends Controller
         ]);
     }
 
+    // ===================================================================================
+    // MÉTODO PARA ATUALIZAR UMA DISCIPLINA EXISTENTE
+    public function atualizarDisciplina(Request $request, $id)
+    {
+        // VALIDA OS DADOS DA REQUISIÇÃO
+        $request->validate([
+            "nome" => "required|string|max:255", // NOME É OBRIGATÓRIO E STRING
+            "descricao" => "nullable|string|max:1000" // DESCRIÇÃO É OPCIONAL E STRING
+        ]);
+
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO
+        $disciplina = Disciplina::where("id_disciplina", $id)
+            ->where("id_usuario", $user->id_usuario)
+            ->first();
+
+        // SE A DISCIPLINA NÃO FOR ENCONTRADA OU NÃO PERTENCER AO USUÁRIO
+        if (!$disciplina) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "Disciplina não encontrada ou sem permissão para atualizar."
+            ], 404);
+        }
+
+        // ATUALIZA OS DADOS DA DISCIPLINA
+        $disciplina->nome = $request->nome;
+        $disciplina->descricao = $request->descricao;
+        $disciplina->save(); // SALVA AS ALTERAÇÕES NO BANCO DE DADOS
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A DISCIPLINA ATUALIZADA
+        return response()->json([
+            "success" => true,
+            "message" => "Disciplina atualizada com sucesso!",
+            "disciplina" => $disciplina
+        ]);
+    }
+
+    // MÉTODO PARA ATUALIZAR UMA DISCIPLINA EXISTENTE
+    public function atualizarTopico(Request $request, $id)
+    {
+        // VALIDA OS DADOS DA REQUISIÇÃO
+        $request->validate([
+            "nome" => "required|string|max:255", // NOME É OBRIGATÓRIO E STRING
+            "descricao" => "nullable|string|max:1000" // DESCRIÇÃO É OPCIONAL E STRING
+        ]);
+
+        // OBTÉM O USUÁRIO AUTENTICADO
+        $user = Auth::user();
+
+        // BUSCA A DISCIPLINA PELO ID E VERIFICA SE PERTENCE AO USUÁRIO
+        $topico = Topico::where("id_topico", $id)
+            ->where("id_usuario", $user->id_usuario)
+            ->first();
+
+        // SE A DISCIPLINA NÃO FOR ENCONTRADA OU NÃO PERTENCER AO USUÁRIO
+        if (!$topico) {
+            // RETORNA UMA RESPOSTA JSON DE ERRO (404 NOT FOUND)
+            return response()->json([
+                "success" => false,
+                "message" => "topico não encontrada ou sem permissão para atualizar."
+            ], 404);
+        }
+
+        // ATUALIZA OS DADOS DA DISCIPLINA
+        $topico->nome = $request->nome;
+        $topico->descricao = $request->descricao;
+        $topico->save(); // SALVA AS ALTERAÇÕES NO BANCO DE DADOS
+
+        // RETORNA UMA RESPOSTA JSON DE SUCESSO COM A MENSAGEM E A DISCIPLINA ATUALIZADA
+        return response()->json([
+            "success" => true,
+            "message" => "topico atualizada com sucesso!",
+            "topico" => $topico
+        ]);
+    }
 
     
 }

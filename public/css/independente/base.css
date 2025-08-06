@@ -1,0 +1,34 @@
+/* Estilos base para Dashboard Independente */
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--gray-800);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Container Principal */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Largura fixa para sidebar, restante para conteúdo */
+    height: 100vh;
+    background-color: var(--gray-100); /* Fundo do dashboard um pouco mais escuro */
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.content-view {
+    animation: fadeIn 0.3s ease-in;
+}
+

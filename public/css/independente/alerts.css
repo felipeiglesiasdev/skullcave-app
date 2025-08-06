@@ -1,0 +1,44 @@
+/* Estilos dos Alertas - Dashboard Independente */
+
+/* Toast Messages */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.alert-success {
+    background: var(--success-color);
+    color: var(--white);
+}
+
+.alert-error {
+    background: var(--error-color);
+    color: var(--white);
+}
+
+.alert-warning {
+    background: var(--warning-color);
+    color: var(--gray-800);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+

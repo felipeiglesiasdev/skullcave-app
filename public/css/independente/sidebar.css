@@ -1,0 +1,250 @@
+/* Estilos da Sidebar - Dashboard Independente */
+
+/* ===== SIDEBAR DISCIPLINAS ===== */
+.sidebar-disciplinas {
+    background: var(--skull-dark); /* Menu preto */
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Header da Sidebar */
+.sidebar-header {
+    padding: 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.sidebar-header .logo img {
+    max-height: 50px;
+}
+
+.user-type {
+    color: var(--skull-orange);
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Seção de Disciplinas */
+.disciplinas-section {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h6 {
+    color: var(--gray-500); /* Cor do texto para contraste no fundo escuro */
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-add {
+    background: var(--skull-orange);
+    border: none;
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.btn-add:hover {
+    background: #e55a3d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 109, 77, 0.3);
+}
+
+/* Lista de Disciplinas */
+.disciplinas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+
+
+.disciplina-card {
+    background-color: var(--skull-dark); /* Fundo do card igual ao menu */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.disciplina-card:hover {
+    border-color: var(--skull-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.disciplina-card.active {
+    border-color: var(--skull-orange);
+    background-color: rgba(255, 255, 255, 0.1); /* Fundo levemente mais claro para ativo */
+}
+
+.disciplina-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--skull-orange);
+    font-size: 18px;
+}
+
+.disciplina-card.active .disciplina-icon {
+    background: var(--skull-orange);
+    color: var(--white);
+}
+
+.disciplina-info h6 {
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    color: var(--white); /* Texto branco no menu escuro */
+    font-size: 15px;
+}
+
+.topicos-count {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.disciplina-actions {
+    display: flex;
+    margin-left: auto;
+    gap: 6px;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.disciplina-card:hover .disciplina-actions {
+    opacity: 1;
+}
+
+.btn-action {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--gray-500);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-action:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+}
+
+.btn-action.btn-delete:hover {
+    background: var(--error-color);
+    color: var(--white);
+}
+
+.btn-action.btn-edit:hover {
+    background: var(--white);
+    color: var(--skull-dark);
+}
+
+/* Footer da Sidebar */
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--skull-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 16px;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    display: block;
+    font-weight: 600;
+    color: var(--white);
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.user-email {
+    display: block;
+    color: var(--gray-500);
+    font-size: 12px;
+}
+
+.logout-form {
+    width: 100%;
+}
+
+.btn-logout {
+    background: var(--skull-dark); /* Fundo 171717 para logout */
+    border: 1px solid var(--skull-dark);
+    color: var(--white);
+    padding: 10px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    transition: var(--transition);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-logout:hover {
+    background: #000000;
+    border-color: #000000;
+    color: var(--white);
+}
+

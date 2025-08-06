@@ -119,6 +119,9 @@ function renderizarDisciplinas(disciplinas) {
                 <span class="topicos-count">${disciplina.topicos ? disciplina.topicos.length : 0} tópicos</span>
             </div>
             <div class="disciplina-actions">
+                <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalDisciplina(${disciplina.id_disciplina}, '${disciplina.nome}', '${disciplina.descricao || ''}')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="btn-action btn-delete" onclick="event.stopPropagation(); removerDisciplina(${disciplina.id_disciplina})" title="Excluir">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -133,26 +136,53 @@ function renderizarDisciplinas(disciplinas) {
 }
 
 // FUNÇÃO PARA ABRIR O MODAL DE CRIAÇÃO/EDIÇÃO DE DISCIPLINA
-function abrirModalDisciplina() {
+// ADICIONADO PARÂMETROS OPCIONAIS PARA EDIÇÃO
+function abrirModalDisciplina(disciplinaId = null, nome = null, descricao = null)
+{
     // SELECIONA O ELEMENTO DO MODAL
     const modalElement = document.getElementById("disciplinaModal");
-    // VERIFICA SE O MODAL FOI ENCONTRADO
-    if (modalElement) {
-        // SELECIONA O FORMULÁRIO DENTRO DO MODAL
-        const form = document.getElementById("disciplinaForm");
-        // VERIFICA SE O FORMULÁRIO EXISTE
-        if (form) {
-            // LIMPA OS CAMPOS DO FORMULÁRIO
-            form.reset();
-        }
-        
-        // CRIA UMA NOVA INSTÂNCIA DO MODAL DO BOOTSTRAP 5 E O MOSTRA
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-    } else {
-        // REGISTRA UM ERRO NO CONSOLE SE O MODAL NÃO FOR ENCONTRADO
-        console.error("Modal disciplinaModal não encontrado");
+    // SELECIONA O TÍTULO DO MODAL
+    const modalTitle = modalElement ? modalElement.querySelector(".modal-title") : null;
+    // SELECIONA O BOTÃO DE SUBMISSÃO DO MODAL
+    const submitButton = modalElement ? modalElement.querySelector("#disciplinaModal .btn-primary") : null;
+    // SELECIONA O FORMULÁRIO DENTRO DO MODAL
+    const form = document.getElementById("disciplinaForm");
+    // SELECIONA OS CAMPOS DO FORMULÁRIO
+    const nomeInput = document.getElementById("nome");
+    const descricaoInput = document.getElementById("descricao");
+
+    // VERIFICA SE OS ELEMENTOS NECESSÁRIOS FORAM ENCONTRADOS
+    if (!modalElement || !modalTitle || !submitButton || !form || !nomeInput || !descricaoInput) {
+        console.error("Um ou mais elementos do modal de disciplina não foram encontrados.");
+        return;
     }
+
+    // LIMPA OS CAMPOS DO FORMULÁRIO
+    form.reset();
+
+    // VERIFICA SE É UMA EDIÇÃO (disciplinaId FOI FORNECIDO)
+    if (disciplinaId) {
+        // DEFINE O TÍTULO DO MODAL PARA EDIÇÃO
+        modalTitle.textContent = "Editar Disciplina";
+        // DEFINE O TEXTO DO BOTÃO DE SUBMISSÃO PARA ATUALIZAR
+        submitButton.textContent = "Atualizar Disciplina";
+        // DEFINE O ATRIBUTO onclick DO BOTÃO PARA CHAMAR A FUNÇÃO DE EDIÇÃO
+        submitButton.onclick = () => editarDisciplina(disciplinaId);
+        // PREENCHE OS CAMPOS DO FORMULÁRIO COM OS DADOS DA DISCIPLINA
+        nomeInput.value = nome;
+        descricaoInput.value = descricao;
+    } else {
+        // DEFINE O TÍTULO DO MODAL PARA CRIAÇÃO
+        modalTitle.textContent = "Nova Disciplina";
+        // DEFINE O TEXTO DO BOTÃO DE SUBMISSÃO PARA CRIAR
+        submitButton.textContent = "Criar Disciplina";
+        // DEFINE O ATRIBUTO onclick DO BOTÃO PARA CHAMAR A FUNÇÃO DE CRIAÇÃO
+        submitButton.onclick = criarDisciplina;
+    }
+    
+    // CRIA UMA NOVA INSTÂNCIA DO MODAL DO BOOTSTRAP 5 E O MOSTRA
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
 }
 
 // FUNÇÃO PARA CRIAR UMA NOVA DISCIPLINA
@@ -276,5 +306,83 @@ function removerDisciplina(disciplinaId) {
         console.error("Erro ao excluir disciplina:", error);
         // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
         mostrarErro("Erro ao excluir disciplina: " + error.message);
+    });
+}
+
+
+// FUNÇÃO PARA EDITAR UMA DISCIPLINA EXISTENTE
+// RECEBE O ID DA DISCIPLINA A SER EDITADA
+function editarDisciplina(disciplinaId) {
+    // SELECIONA O FORMULÁRIO DE DISCIPLINA
+    const form = document.getElementById("disciplinaForm");
+    // VERIFICA SE O FORMULÁRIO FOI ENCONTRADO
+    if (!form) {
+        // MOSTRA UM ERRO SE O FORMULÁRIO NÃO FOR ENCONTRADO
+        mostrarErro("Formulário não encontrado");
+        return; // ENCERRA A FUNÇÃO
+    }
+    
+    // CRIA UM OBJETO FormData A PARTIR DO FORMULÁRIO
+    const formData = new FormData(form);
+    
+    // EXTRAI OS DADOS DO FORMULÁRIO PARA UM OBJETO JAVASCRIPT
+    const data = {
+        nome: formData.get("nome"), // OBTÉM O VALOR DO CAMPO 'nome'
+        descricao: formData.get("descricao") || "" // OBTÉM O VALOR DO CAMPO 'descricao' OU UMA STRING VAZIA
+    };
+    
+    // VALIDAÇÃO BÁSICA DO NOME DA DISCIPLINA
+    if (!data.nome || data.nome.trim().length < 3) {
+        // MOSTRA UM ERRO SE O NOME FOR INVÁLIDO
+        mostrarErro("Nome da disciplina deve ter pelo menos 3 caracteres");
+        return; // ENCERRA A FUNÇÃO
+    }
+    
+    // FAZ UMA REQUISIÇÃO FETCH PARA A API DE EDIÇÃO DE DISCIPLINAS
+    fetch(`./api/independente/disciplinas/${disciplinaId}`, {
+        method: "PUT", // MÉTODO HTTP PUT PARA ATUALIZAÇÃO
+        headers: { // CABEÇALHOS DA REQUISIÇÃO
+            "Content-Type": "application/json", // TIPO DE CONTEÚDO JSON
+            "X-CSRF-TOKEN": document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content") || "", // TOKEN CSRF
+            "Accept": "application/json" // ACEITA RESPOSTAS JSON
+        },
+        body: JSON.stringify(data) // CORPO DA REQUISIÇÃO EM FORMATO JSON
+    })
+    .then(response => {
+        // VERIFICA SE A RESPOSTA DA REQUISIÇÃO FOI BEM-SUCEDIDA
+        if (!response.ok) {
+            // SE NÃO FOI BEM-SUCEDIDA, LANÇA UM ERRO
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // RETORNA A RESPOSTA COMO JSON
+        return response.json();
+    })
+    .then(data => {
+        // PROCESSA OS DADOS RECEBIDOS DO SERVIDOR
+        if (data.success) {
+            // MOSTRA UMA MENSAGEM DE SUCESSO
+            mostrarSucesso(data.message || "Disciplina atualizada com sucesso!");
+            
+            // FECHA O MODAL APÓS A ATUALIZAÇÃO BEM-SUCEDIDA
+            const modalElement = document.getElementById("disciplinaModal");
+            if (modalElement) {
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+            
+            // RECARREGA A LISTA DE DISCIPLINAS PARA ATUALIZAR A INTERFACE
+            carregarDisciplinas();
+        } else {
+            // MOSTRA UMA MENSAGEM DE ERRO
+            mostrarErro(data.message || "Erro ao atualizar disciplina");
+        }
+    })
+    .catch(error => {
+        // TRATA ERROS DE REDE OU OUTROS ERROS DURANTE A REQUISIÇÃO
+        console.error("Erro ao atualizar disciplina:", error);
+        // MOSTRA UMA MENSAGEM DE ERRO MAIS DETALHADA
+        mostrarErro("Erro ao atualizar disciplina: " + error.message);
     });
 }
